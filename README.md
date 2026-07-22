@@ -6,3 +6,5 @@ Current phase: competition research and project design. The implementation stack
 will be selected only after the design is reviewed and approved.
 
 Official competition: <https://datahub.devpost.com/>
+
+Planning: [docs/PLAN.md](docs/PLAN.md)
