@@ -1,0 +1,57 @@
+{
+  "tested_at": "2026-07-22T22:38:00+08:00",
+  "environment": {
+    "architecture": "darwin/arm64",
+    "python": "3.11.15",
+    "datahub_core": "1.6.0",
+    "datahub_cli": "1.6.0",
+    "mcp_server_datahub": "0.6.0",
+    "fastmcp": "3.4.4"
+  },
+  "sample_graph": {
+    "datapack": "showcase-ecommerce",
+    "datasets": 67,
+    "upstream_lineage_aspects": 55,
+    "fine_grained_lineage_aspects": 32,
+    "documents": 18
+  },
+  "mcp": {
+    "transport": "stdio",
+    "available_tool_count": 20,
+    "source_urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.order_entry_db.order_entry.orders,PROD)",
+    "upstream": {
+      "total": 5,
+      "returned": 5
+    },
+    "downstream": {
+      "total": 36,
+      "returned": 20,
+      "pagination_required": true,
+      "representative_entity_types": [
+        "dataset",
+        "dashboard",
+        "chart"
+      ],
+      "representative_platforms": [
+        "snowflake",
+        "looker",
+        "tableau",
+        "powerbi"
+      ]
+    }
+  },
+  "write_back": {
+    "tool": "save_document",
+    "success": true,
+    "read_back_verified": true,
+    "document_urn": "urn:li:document:shared-c596485a-bea3-4b01-bc82-62167db49921",
+    "document_type": "Decision",
+    "title": "LineageGuard local interface validation"
+  },
+  "observations": [
+    "The detailed lineage response exceeded 100000 characters before deterministic compaction.",
+    "The datapack loader filtered 247 incompatible derived aspects but preserved core schema and lineage aspects.",
+    "Quickstart GMS does not expose /mcp directly; DataHub Core requires the standalone MCP server.",
+    "datahub init login succeeded but token creation returned 403 and CLI 1.6.0 masked it as a NoneType error."
+  ]
+}

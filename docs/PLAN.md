@@ -1,5 +1,7 @@
 # DataHub Agent Hackathon Plan
 
+Status on 2026-07-22: **LineageGuard selected; local read/write gate passed.**
+
 ## Objective
 
 Produce a reliable agent that uses DataHub's context graph to diagnose a real
@@ -26,20 +28,23 @@ A pull-request and incident companion that:
 The competition story is not "chat with metadata." It is a closed loop:
 context -> decision -> validated action -> graph write-back.
 
-## Alternatives retained until the Jul 24 idea gate
+## Alternatives parked after the Jul 22 technical gate
 
 - ML Lineage Incident Investigator: trace model-quality regressions back through
   features and datasets, then write an incident record.
 - Data Contract Repair Agent: detect contract drift, propose a patch and record
   the accepted compatibility decision.
 
-Choose the concept with the simplest credible write-back and best sample data.
+LineageGuard won the gate because the showcase graph supports a credible
+cross-platform blast radius and the MCP server can write a linked Decision
+document. Revisit an alternative only if the first dbt change scenario cannot
+produce a deterministic validated artifact by Jul 30.
 
 ## Required architecture
 
-- Local DataHub OSS quickstart
-- At least one required agent interface: prefer MCP Server, with Agent Context
-  Kit as a fallback
+- Local DataHub OSS quickstart pinned to `1.6.0`
+- Standalone DataHub MCP Server pinned to `0.6.0`; DataHub Core GMS does not
+  expose the managed `/mcp` endpoint used by DataHub Cloud
 - Small deterministic orchestration layer around model calls
 - Synthetic but realistic data-platform graph and change scenarios
 - Validation/evaluation harness that can run without the UI
@@ -73,8 +78,10 @@ claims, write-back success and end-to-end latency.
 
 Jul 24:
 
-- DataHub starts locally and exposes enough graph context for the chosen story.
-- A programmatic read and one harmless write-back succeed.
+- [x] DataHub starts locally and exposes enough graph context for the chosen story.
+- [x] MCP search and 3+ hop lineage reads succeed on a sample dbt asset.
+- [x] A harmless Decision document write-back and read-back succeed.
+- [ ] Token-authenticated MCP read/write succeeds with scoped permissions.
 
 Jul 30:
 
@@ -89,6 +96,7 @@ remove evaluation or write-back.
 - New work created during the competition period
 - Apache-2.0 license
 - Public repository and working test/demo URL
+- Keep the working project available through Aug 31, 2026 at 17:00 EDT
 - Complete setup and sample dataset instructions
 - Example outputs committed to `examples/`
 - Public English demo under three minutes
@@ -101,4 +109,3 @@ remove evaluation or write-back.
 - Hosting/demo: USD 0–25
 - Contingency: USD 20
 - Target cap: USD 120
-

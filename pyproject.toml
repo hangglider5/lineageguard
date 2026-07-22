@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lineageguard"
+version = "0.1.0"
+description = "A DataHub-native agent for validated schema-change impact analysis."
+readme = "README.md"
+requires-python = ">=3.10,<3.14"
+license = "Apache-2.0"
+dependencies = [
+  "acryl-datahub==1.6.0",
+  "fastmcp==3.4.4",
+  "mcp==1.28.1",
+  "mcp-server-datahub==0.6.0",
+]
+
+[project.scripts]
+lineageguard-probe-mcp = "lineageguard.mcp_probe:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
