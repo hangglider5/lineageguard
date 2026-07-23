@@ -18,6 +18,7 @@ dependencies = [
 
 [project.scripts]
 lineageguard-probe-mcp = "lineageguard.mcp_probe:main"
+lineageguard-run = "lineageguard.workflow:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

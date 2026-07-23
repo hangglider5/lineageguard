@@ -1,7 +1,8 @@
 # LineageGuard proposal review
 
 Reviewed on 2026-07-22 against the official rules, current DataHub `1.6.0`
-documentation, and a live local Quickstart.
+documentation, and a live local Quickstart. Updated on 2026-07-23 after the first
+end-to-end scenario.
 
 ## Verdict
 
@@ -29,15 +30,15 @@ Input:
 Context reads:
 
 - dataset and column schema;
-- 3+ hop upstream and downstream lineage;
-- ownership, domains, glossary terms, tags, and quality signals;
-- related context documents where useful.
+- 3+ hop downstream column lineage;
+- ownership, domains, glossary terms, and tags.
 
 Decision and artifact:
 
 - classify the change as safe, risky, or blocked;
-- identify directly and transitively impacted datasets, jobs, dashboards, and
-  charts;
+- identify directly and transitively impacted datasets using fine-grained column
+  lineage; use dataset-level lineage separately when broader dashboard/chart
+  context is needed;
 - produce a JSON decision plus a Markdown migration checklist and validation SQL;
 - fail closed when metadata is missing or the artifact does not validate.
 
@@ -62,6 +63,18 @@ The 2026-07-22 interface probe established:
 - `save_document` created a Decision and `get_entities` verified the exact URN.
 
 See `examples/interface-probe.json` for machine-readable evidence.
+
+The 2026-07-23 vertical slice additionally established:
+
+- the `order_total` field exists on the dbt source with native type `FLOAT` and
+  the `Order Total` glossary term;
+- column-level lineage narrows the 36 dataset-level downstream assets to 17
+  attributable column consumers (1 direct, 16 transitive);
+- deterministic validation accepted the generated decision with zero errors and
+  found 10 impacted assets without owner metadata;
+- one Decision document was related to the source plus 17 impacted datasets, read
+  back by URN, and found through the source asset's `relatedDocuments` edge;
+- an explicit document URN updates the same Decision on retry.
 
 ## Highest risks
 
@@ -96,11 +109,11 @@ judges may not install a 13 GB stack and may judge only the narrative/video.
 Mitigation: keep local setup reproducible, but plan a lightweight public demo with
 precomputed evidence and a live scoped DataHub backend before submission freeze.
 
-### P0 — Local disk headroom is below the documented requirement
+### P2 — Local disk headroom must remain monitored
 
-The tested machine had roughly 4 GB free after Quickstart. The official guide asks
-for 13 GB free before installation. Additional datapacks, duplicate Docker tags,
-or build caches can fail unpredictably.
+Disk headroom recovered from roughly 4 GB on Jul 22 to roughly 37 GB on Jul 23.
+The official guide asks for 13 GB free before installation, so the current machine
+is above the requirement, but Docker growth can still regress it.
 
 Mitigation: avoid a second DataHub version, monitor Docker disk use, and perform
 the fresh-machine rehearsal on a volume with at least 20 GB free.
@@ -111,9 +124,13 @@ One 3+ hop response exceeded 100,000 characters while only 20 of 36 downstream
 assets were returned. Passing raw metadata to an LLM would be slow, costly, and
 likely truncate important evidence.
 
-Mitigation: paginate deterministically, retain URN/type/degree/owner/domain first,
-fetch full metadata only for shortlisted assets, and record total versus returned
-counts in every decision.
+Mitigation: request a bounded window, page deterministically when token truncation
+occurs, retain URN/type/degree/owner/domain first, and require `total` to equal the
+deduplicated retrieved count before calling lineage complete.
+
+The MCP server's current `hasMore` value is derived from the fetched window and
+can be false even when `total` is larger. LineageGuard therefore does not trust
+`hasMore` as its completeness proof.
 
 ### P1 — `max_hops=3` means the `3+` bucket
 
@@ -146,8 +163,9 @@ routing, and graph write-back as one transaction-like workflow.
 MCP mutation tools are opt-in, but a retry can still create duplicate documents
 or overwrite editable metadata.
 
-Mitigation: require explicit approval for writes, use a stable decision ID,
-separate proposed from applied state, verify every write by URN, and test retries.
+Mitigation: require the explicit `--write-back` flag, use a stable decision ID,
+allow retries to target `--document-urn`, and verify both the document URN and its
+relationship from the source asset after every write.
 
 ## Rule corrections to the original plan
 

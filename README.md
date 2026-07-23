@@ -10,20 +10,23 @@ is **2026-08-11 05:00 China Standard Time** (2026-08-10 17:00 EDT).
 
 ## Current status
 
-The local interface gate passed on 2026-07-22:
+The first end-to-end scenario passed on 2026-07-23:
 
 - DataHub Core `1.6.0` runs on the official Docker Quickstart.
 - The official `showcase-ecommerce` datapack loaded successfully.
 - `mcp-server-datahub` `0.6.0` exposed 20 tools over MCP stdio, including
   read-only lineage tools and opt-in mutation tools.
-- A search-selected dbt `orders` asset returned 5 upstream and 36 downstream
-  assets across datasets, data jobs, dashboards, and charts.
-- MCP `save_document` created a Decision document and MCP `get_entities` read it
-  back successfully.
+- The `drop_orders_order_total` scenario verified the source schema and found all
+  17 column-level downstream datasets (1 direct and 16 transitive).
+- The deterministic policy produced a validated `BLOCK/HIGH` decision, owner
+  routes, a migration checklist, and read-only validation SQL.
+- MCP `save_document` wrote the Decision back against 18 related assets. Both the
+  document read-back and the source asset's `relatedDocuments` edge were verified.
 
-Machine-readable evidence is committed at
-[`examples/interface-probe.json`](examples/interface-probe.json). The proposal
-review and known risks are in [`docs/REVIEW.md`](docs/REVIEW.md).
+The resulting artifacts are committed under
+[`examples/drop-orders-order-total/`](examples/drop-orders-order-total/).
+Interface evidence is at [`examples/interface-probe.json`](examples/interface-probe.json),
+and the proposal review and known risks are in [`docs/REVIEW.md`](docs/REVIEW.md).
 
 ## Local setup
 
@@ -63,6 +66,44 @@ Mutation tools are disabled by default in the official MCP server. The probe
 enables them only in its child process and the write action requires the explicit
 flag above.
 
+## Run the first LineageGuard scenario
+
+Generate a decision without mutating DataHub:
+
+```bash
+PYTHONPATH=src .venv/bin/python -m lineageguard.workflow \
+  scenarios/drop_orders_order_total.json \
+  --output-dir build/drop-orders-order-total
+```
+
+The expected verdict is `BLOCK`; that is a successful policy result, not a
+process failure. The CLI exits nonzero only for retrieval/runtime failures or an
+invalid artifact.
+
+Explicitly write the validated Decision to DataHub and verify it:
+
+```bash
+PYTHONPATH=src .venv/bin/python -m lineageguard.workflow \
+  scenarios/drop_orders_order_total.json \
+  --output-dir build/drop-orders-order-total \
+  --write-back
+```
+
+For an idempotent retry, pass the `document_urn` from `write-back.json`:
+
+```bash
+PYTHONPATH=src .venv/bin/python -m lineageguard.workflow \
+  scenarios/drop_orders_order_total.json \
+  --output-dir build/drop-orders-order-total \
+  --write-back \
+  --document-urn urn:li:document:YOUR_EXISTING_DOCUMENT_ID
+```
+
+The workflow resolves exactly one source dataset, verifies the field and declared
+type, retrieves column-level downstream lineage, compacts only attributable graph
+metadata, applies fail-closed rules, validates every cited asset/owner/query, and
+only then permits write-back.
+
 ## Tests
 
 ```bash
@@ -73,7 +114,7 @@ bash -n scripts/bootstrap_local.sh
 
 ## Design
 
-The first vertical slice is deliberately narrow:
+The implemented first vertical slice is deliberately narrow:
 
 1. accept a dbt schema change that removes or changes one column;
 2. read schema, ownership, domain, glossary, and multi-hop lineage through MCP;

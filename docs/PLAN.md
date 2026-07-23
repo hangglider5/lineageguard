@@ -1,6 +1,6 @@
 # DataHub Agent Hackathon Plan
 
-Status on 2026-07-22: **LineageGuard selected; local read/write gate passed.**
+Status on 2026-07-23: **first column-change scenario works end to end.**
 
 ## Objective
 
@@ -85,8 +85,12 @@ Jul 24:
 
 Jul 30:
 
-- One scenario runs end-to-end without manual database edits.
-- The output is a concrete artifact, not only prose.
+- [x] One scenario runs end-to-end without manual database edits.
+- [x] The output is a concrete artifact, not only prose.
+
+The gate was reached early on Jul 23. The next implementation target is the fixed
+evaluation set: safe additions, type mismatches, missing fields, truncated
+lineage, ownership gaps, and idempotent write-back retries.
 
 If either gate fails, reduce scope to a CLI and a single change type. Do not
 remove evaluation or write-back.
