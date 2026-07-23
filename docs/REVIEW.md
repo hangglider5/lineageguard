@@ -76,6 +76,12 @@ The 2026-07-23 vertical slice additionally established:
   back by URN, and found through the source asset's `relatedDocuments` edge;
 - an explicit document URN updates the same Decision on retry.
 
+The fixed evaluation v1 adds 16 cases and 130 checks. All pass offline, including
+exact owner/domain routing and domain-misroute rejection, while a
+separate read-only live gate revalidated 17/17 downstream assets with zero
+artifact errors and recorded MCP workflow latency independently from local policy
+latency.
+
 ## Highest risks
 
 ### P0 — Required interface deployment is easy to misread

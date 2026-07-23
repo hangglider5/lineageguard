@@ -465,6 +465,14 @@
       ]
     }
   ],
+  "domain_routes": [
+    {
+      "domain_urn": "urn:li:domain:b2fd91.d4f24004-fb54-4e3c-8dea-2b7e209230b0",
+      "asset_urns": [
+        "urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.ORDER_ENTRY_DB.analytics.order_history,PROD)"
+      ]
+    }
+  ],
   "reason_codes": [
     "BREAKING_CHANGE_HAS_DOWNSTREAM_IMPACT",
     "DOWNSTREAM_OWNERSHIP_GAPS"
@@ -477,7 +485,8 @@
       "asset_urns": [
         "urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.order_entry_db.order_entry.orders,PROD)"
       ],
-      "owner_urns": []
+      "owner_urns": [],
+      "domain_urns": []
     },
     {
       "action_id": "migrate-dependents",
@@ -502,7 +511,8 @@
         "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.b980a8c5-28eb-119e-f6ca-4da32732e5be,PROD)",
         "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.c067553a-127e-a871-14a0-5f32cb032c78,PROD)"
       ],
-      "owner_urns": []
+      "owner_urns": [],
+      "domain_urns": []
     },
     {
       "action_id": "notify-owners",
@@ -510,20 +520,10 @@
       "description": "Route the migration decision to all discovered asset owners.",
       "asset_urns": [
         "urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.ORDER_ENTRY_DB.analytics.order_details,PROD)",
-        "urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.ORDER_ENTRY_DB.analytics.order_history,PROD)",
         "urn:li:dataset:(urn:li:dataPlatform:looker,b2fd91.order-entry-looker.view.order_details,PROD)",
         "urn:li:dataset:(urn:li:dataPlatform:looker,b2fd91.order-entry.explore.order_details,PROD)",
-        "urn:li:dataset:(urn:li:dataPlatform:powerbi,b2fd91.datahub_order_entries.Customer_Analytics_Measures,PROD)",
-        "urn:li:dataset:(urn:li:dataPlatform:powerbi,b2fd91.datahub_order_entries.Essential_KPI_Measures,PROD)",
-        "urn:li:dataset:(urn:li:dataPlatform:powerbi,b2fd91.datahub_order_entries.Geographic_Measures,PROD)",
         "urn:li:dataset:(urn:li:dataPlatform:powerbi,b2fd91.datahub_order_entries.ORDER_DETAILS,PROD)",
-        "urn:li:dataset:(urn:li:dataPlatform:powerbi,b2fd91.datahub_order_entries.Product_Perfromance_Measures,PROD)",
-        "urn:li:dataset:(urn:li:dataPlatform:powerbi,b2fd91.datahub_order_entries.Time_Inteligence_Measures,PROD)",
         "urn:li:dataset:(urn:li:dataPlatform:snowflake,b2fd91.order_entry_db.analytics.order_details,PROD)",
-        "urn:li:dataset:(urn:li:dataPlatform:snowflake,b2fd91.order_entry_db.analytics.order_details_replica,PROD)",
-        "urn:li:dataset:(urn:li:dataPlatform:snowflake,b2fd91.order_entry_db.analytics.order_history,PROD)",
-        "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.37fcfb15-34ae-973a-5ae3-cf63691d48e3,PROD)",
-        "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.8bfe7483-1c9a-a0e1-ec84-57207dd37a15,PROD)",
         "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.b980a8c5-28eb-119e-f6ca-4da32732e5be,PROD)",
         "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.c067553a-127e-a871-14a0-5f32cb032c78,PROD)"
       ],
@@ -540,6 +540,19 @@
         "urn:li:corpuser:b2fd91.kirk@example.com",
         "urn:li:corpuser:b2fd91.marty@example.com",
         "urn:li:corpuser:b2fd91.sam@example.com"
+      ],
+      "domain_urns": []
+    },
+    {
+      "action_id": "route-domain-fallbacks",
+      "kind": "route_domains",
+      "description": "Route ownerless impacted assets through their assigned domains.",
+      "asset_urns": [
+        "urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.ORDER_ENTRY_DB.analytics.order_history,PROD)"
+      ],
+      "owner_urns": [],
+      "domain_urns": [
+        "urn:li:domain:b2fd91.d4f24004-fb54-4e3c-8dea-2b7e209230b0"
       ]
     },
     {
@@ -558,7 +571,8 @@
         "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.37fcfb15-34ae-973a-5ae3-cf63691d48e3,PROD)",
         "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.8bfe7483-1c9a-a0e1-ec84-57207dd37a15,PROD)"
       ],
-      "owner_urns": []
+      "owner_urns": [],
+      "domain_urns": []
     },
     {
       "action_id": "run-source-validation",
@@ -567,7 +581,8 @@
       "asset_urns": [
         "urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.order_entry_db.order_entry.orders,PROD)"
       ],
-      "owner_urns": []
+      "owner_urns": [],
+      "domain_urns": []
     }
   ],
   "validation_queries": [

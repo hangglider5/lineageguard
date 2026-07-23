@@ -140,18 +140,25 @@ class OwnerRoute(StrictModel):
     asset_urns: list[str]
 
 
+class DomainRoute(StrictModel):
+    domain_urn: str = Field(pattern=r"^urn:li:domain:")
+    asset_urns: list[str]
+
+
 class ActionItem(StrictModel):
     action_id: str
     kind: Literal[
         "hold_deployment",
         "migrate_dependents",
         "notify_owners",
+        "route_domains",
         "resolve_ownership",
         "run_validation",
     ]
     description: str
     asset_urns: list[str] = Field(default_factory=list)
     owner_urns: list[str] = Field(default_factory=list)
+    domain_urns: list[str] = Field(default_factory=list)
 
 
 class ValidationQuery(StrictModel):
@@ -174,6 +181,7 @@ class DecisionArtifact(StrictModel):
     evidence: DecisionEvidence
     impacted_assets: list[AssetImpact]
     owner_routes: list[OwnerRoute]
+    domain_routes: list[DomainRoute]
     reason_codes: list[str]
     required_actions: list[ActionItem]
     validation_queries: list[ValidationQuery]

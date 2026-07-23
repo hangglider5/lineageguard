@@ -1,6 +1,6 @@
 # DataHub Agent Hackathon Plan
 
-Status on 2026-07-23: **first column-change scenario works end to end.**
+Status on 2026-07-23: **first scenario and fixed evaluation v1 are complete.**
 
 ## Objective
 
@@ -64,6 +64,16 @@ Create 10–20 fixed scenarios covering:
 Track task completion, correct impacted assets, artifact validity, unsupported
 claims, write-back success and end-to-end latency.
 
+Implemented in fixed evaluation v1:
+
+- [x] 16 versioned cases with explicit graph fixtures and expected outputs
+- [x] exact verdict, severity, reason, action, impacted-URN, and lineage checks
+- [x] exact owner routing and domain fallback for ownerless assets
+- [x] adversarial rejection for unsupported assets, owner/domain misrouting,
+  unsafe SQL, and verdict override
+- [x] verified write-back receipt check
+- [x] offline policy latency reported separately from live MCP workflow latency
+
 ## Schedule
 
 - Jul 22–24: run DataHub locally, load sample graph, select concept
@@ -88,9 +98,10 @@ Jul 30:
 - [x] One scenario runs end-to-end without manual database edits.
 - [x] The output is a concrete artifact, not only prose.
 
-The gate was reached early on Jul 23. The next implementation target is the fixed
-evaluation set: safe additions, type mismatches, missing fields, truncated
-lineage, ownership gaps, and idempotent write-back retries.
+The gate was reached early on Jul 23. Fixed evaluation v1 now covers safe
+additions, type mismatches, missing fields, truncated lineage, ownership gaps,
+artifact tampering, and verified/idempotent write-back behavior. The next target
+is CI plus a public demo-safe backend/authentication path.
 
 If either gate fails, reduce scope to a CLI and a single change type. Do not
 remove evaluation or write-back.

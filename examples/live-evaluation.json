@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "evaluation_id": "drop-orders-order-total-live",
+  "execution_scope": "live_datahub_read_only",
+  "passed": true,
+  "checks": {
+    "verdict": true,
+    "severity": true,
+    "downstream_total": true,
+    "evaluated_downstream": true,
+    "lineage_complete": true,
+    "artifact_valid": true,
+    "owner_routes": true,
+    "domain_routes": true,
+    "source_resolved": true
+  },
+  "end_to_end_latency_ms": 1168.633,
+  "actual": {
+    "decision_id": "lineageguard:drop-orders-order-total",
+    "source_urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.order_entry_db.order_entry.orders,PROD)",
+    "verdict": "block",
+    "severity": "high",
+    "downstream_total": 17,
+    "evaluated_downstream": 17,
+    "lineage_complete": true,
+    "validation_error_count": 0,
+    "owner_route_count": 12,
+    "domain_route_count": 1
+  }
+}

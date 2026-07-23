@@ -113,12 +113,39 @@ class DecisionPolicyTests(unittest.TestCase):
         self.assertEqual(artifact.verdict, Verdict.BLOCK)
         self.assertIn("LINEAGE_INCOMPLETE", artifact.reason_codes)
 
+    def test_ownerless_asset_routes_through_its_domain(self) -> None:
+        snapshot = make_snapshot()
+        snapshot.downstream[1].domain_urns = ["urn:li:domain:commerce"]
+
+        artifact = decide(make_change(), snapshot)
+
+        self.assertEqual(len(artifact.domain_routes), 1)
+        self.assertEqual(
+            artifact.domain_routes[0].asset_urns,
+            ["urn:li:dashboard:(looker,orders)"],
+        )
+        self.assertIn(
+            "route_domains", [action.kind for action in artifact.required_actions]
+        )
+        notify_action = next(
+            action
+            for action in artifact.required_actions
+            if action.kind == "notify_owners"
+        )
+        self.assertNotIn(
+            "urn:li:dashboard:(looker,orders)", notify_action.asset_urns
+        )
+        self.assertEqual(validate_artifact(artifact, make_change(), snapshot), [])
+
     def test_missing_source_field_fails_closed(self) -> None:
         artifact = decide(make_change(), make_snapshot(field_present=False))
 
         self.assertEqual(artifact.verdict, Verdict.BLOCK)
         self.assertIn("SOURCE_FIELD_NOT_FOUND", artifact.reason_codes)
         self.assertEqual(artifact.validation_queries, [])
+        self.assertNotIn(
+            "run_validation", [action.kind for action in artifact.required_actions]
+        )
 
     def test_validator_rejects_unsupported_action_asset(self) -> None:
         change = make_change()
@@ -139,6 +166,7 @@ class DecisionPolicyTests(unittest.TestCase):
         self.assertIn("## Impacted assets", markdown)
         self.assertIn("## Required actions", markdown)
         self.assertIn("## Owner routing", markdown)
+        self.assertIn("## Domain fallback routing", markdown)
         self.assertIn("SELECT COUNT(*)", markdown)
         self.assertNotIn("DROP TABLE", markdown)
 

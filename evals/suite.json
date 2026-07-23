@@ -1,0 +1,698 @@
+{
+  "schema_version": "1.0",
+  "suite_id": "lineageguard-fixed-v1",
+  "changes": {
+    "add_new_field": {
+      "scenario_id": "add-orders-loyalty-tier",
+      "target": {
+        "query": "/q orders",
+        "platform": "dbt",
+        "name": "orders",
+        "env": "PROD",
+        "relation": "order_entry_db.order_entry.orders"
+      },
+      "kind": "add_column",
+      "field_path": "loyalty_tier",
+      "after_type": "VARCHAR"
+    },
+    "add_existing_field": {
+      "scenario_id": "add-existing-order-total",
+      "target": {
+        "query": "/q orders",
+        "platform": "dbt",
+        "name": "orders",
+        "env": "PROD",
+        "relation": "order_entry_db.order_entry.orders"
+      },
+      "kind": "add_column",
+      "field_path": "order_total",
+      "after_type": "FLOAT"
+    },
+    "drop_order_total": {
+      "scenario_id": "drop-orders-order-total-eval",
+      "target": {
+        "query": "/q orders",
+        "platform": "dbt",
+        "name": "orders",
+        "env": "PROD",
+        "relation": "order_entry_db.order_entry.orders"
+      },
+      "kind": "drop_column",
+      "field_path": "order_total",
+      "before_type": "FLOAT"
+    },
+    "rename_order_total": {
+      "scenario_id": "rename-orders-order-total",
+      "target": {
+        "query": "/q orders",
+        "platform": "dbt",
+        "name": "orders",
+        "env": "PROD",
+        "relation": "order_entry_db.order_entry.orders"
+      },
+      "kind": "rename_column",
+      "field_path": "order_total",
+      "before_type": "FLOAT",
+      "new_field_path": "gross_order_total"
+    },
+    "change_order_total_type": {
+      "scenario_id": "change-orders-order-total-type",
+      "target": {
+        "query": "/q orders",
+        "platform": "dbt",
+        "name": "orders",
+        "env": "PROD",
+        "relation": "order_entry_db.order_entry.orders"
+      },
+      "kind": "type_change",
+      "field_path": "order_total",
+      "before_type": "FLOAT",
+      "after_type": "DECIMAL"
+    },
+    "mismatched_order_total_type": {
+      "scenario_id": "drop-orders-type-mismatch",
+      "target": {
+        "query": "/q orders",
+        "platform": "dbt",
+        "name": "orders",
+        "env": "PROD",
+        "relation": "order_entry_db.order_entry.orders"
+      },
+      "kind": "drop_column",
+      "field_path": "order_total",
+      "before_type": "NUMBER"
+    },
+    "drop_missing_field": {
+      "scenario_id": "drop-orders-missing-field",
+      "target": {
+        "query": "/q orders",
+        "platform": "dbt",
+        "name": "orders",
+        "env": "PROD",
+        "relation": "order_entry_db.order_entry.orders"
+      },
+      "kind": "drop_column",
+      "field_path": "customer_ssn",
+      "before_type": "TEXT"
+    }
+  },
+  "snapshots": {
+    "field_absent": {
+      "source": {
+        "urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,orders,PROD)",
+        "entity_type": "DATASET",
+        "name": "orders",
+        "platform": "dbt",
+        "degree": 0,
+        "owner_urns": ["urn:li:corpuser:source-owner"],
+        "domain_urns": ["urn:li:domain:commerce"]
+      },
+      "field": null,
+      "downstream_total": 0,
+      "downstream": [],
+      "lineage_complete": true
+    },
+    "field_existing_no_downstream": {
+      "source": {
+        "urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,orders,PROD)",
+        "entity_type": "DATASET",
+        "name": "orders",
+        "platform": "dbt",
+        "degree": 0,
+        "owner_urns": ["urn:li:corpuser:source-owner"],
+        "domain_urns": ["urn:li:domain:commerce"]
+      },
+      "field": {
+        "field_path": "order_total",
+        "native_type": "FLOAT",
+        "term_names": ["Order Total"]
+      },
+      "downstream_total": 0,
+      "downstream": [],
+      "lineage_complete": true
+    },
+    "impact_with_ownership_gap": {
+      "source": {
+        "urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,orders,PROD)",
+        "entity_type": "DATASET",
+        "name": "orders",
+        "platform": "dbt",
+        "degree": 0,
+        "owner_urns": ["urn:li:corpuser:source-owner"],
+        "domain_urns": ["urn:li:domain:commerce"]
+      },
+      "field": {
+        "field_path": "order_total",
+        "native_type": "FLOAT",
+        "term_names": ["Order Total"]
+      },
+      "downstream_total": 3,
+      "downstream": [
+        {
+          "urn": "urn:li:dataset:(urn:li:dataPlatform:snowflake,order_details,PROD)",
+          "entity_type": "DATASET",
+          "name": "order_details",
+          "platform": "snowflake",
+          "degree": 1,
+          "owner_urns": ["urn:li:corpgroup:data-team"],
+          "domain_urns": ["urn:li:domain:commerce"],
+          "impacted_columns": ["order_total"]
+        },
+        {
+          "urn": "urn:li:dataset:(urn:li:dataPlatform:looker,revenue,PROD)",
+          "entity_type": "DATASET",
+          "name": "revenue",
+          "platform": "looker",
+          "degree": 2,
+          "owner_urns": ["urn:li:corpgroup:analytics"],
+          "impacted_columns": ["total_revenue"]
+        },
+        {
+          "urn": "urn:li:dataset:(urn:li:dataPlatform:tableau,margin,PROD)",
+          "entity_type": "DATASET",
+          "name": "margin",
+          "platform": "tableau",
+          "degree": 4,
+          "domain_urns": ["urn:li:domain:finance"],
+          "impacted_columns": ["gross_margin"]
+        }
+      ],
+      "lineage_complete": true
+    },
+    "impact_fully_owned": {
+      "source": {
+        "urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,orders,PROD)",
+        "entity_type": "DATASET",
+        "name": "orders",
+        "platform": "dbt",
+        "degree": 0,
+        "owner_urns": ["urn:li:corpuser:source-owner"],
+        "domain_urns": ["urn:li:domain:commerce"]
+      },
+      "field": {
+        "field_path": "order_total",
+        "native_type": "FLOAT",
+        "term_names": ["Order Total"]
+      },
+      "downstream_total": 3,
+      "downstream": [
+        {
+          "urn": "urn:li:dataset:(urn:li:dataPlatform:snowflake,order_details,PROD)",
+          "entity_type": "DATASET",
+          "name": "order_details",
+          "platform": "snowflake",
+          "degree": 1,
+          "owner_urns": ["urn:li:corpgroup:data-team"],
+          "impacted_columns": ["order_total"]
+        },
+        {
+          "urn": "urn:li:dataset:(urn:li:dataPlatform:looker,revenue,PROD)",
+          "entity_type": "DATASET",
+          "name": "revenue",
+          "platform": "looker",
+          "degree": 2,
+          "owner_urns": ["urn:li:corpgroup:analytics"],
+          "impacted_columns": ["total_revenue"]
+        },
+        {
+          "urn": "urn:li:dataset:(urn:li:dataPlatform:tableau,margin,PROD)",
+          "entity_type": "DATASET",
+          "name": "margin",
+          "platform": "tableau",
+          "degree": 4,
+          "owner_urns": ["urn:li:corpgroup:bi"],
+          "impacted_columns": ["gross_margin"]
+        }
+      ],
+      "lineage_complete": true
+    },
+    "impact_truncated": {
+      "source": {
+        "urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,orders,PROD)",
+        "entity_type": "DATASET",
+        "name": "orders",
+        "platform": "dbt",
+        "degree": 0,
+        "owner_urns": ["urn:li:corpuser:source-owner"]
+      },
+      "field": {
+        "field_path": "order_total",
+        "native_type": "FLOAT"
+      },
+      "downstream_total": 3,
+      "downstream": [
+        {
+          "urn": "urn:li:dataset:(urn:li:dataPlatform:snowflake,order_details,PROD)",
+          "entity_type": "DATASET",
+          "name": "order_details",
+          "platform": "snowflake",
+          "degree": 1,
+          "owner_urns": ["urn:li:corpgroup:data-team"],
+          "impacted_columns": ["order_total"]
+        },
+        {
+          "urn": "urn:li:dataset:(urn:li:dataPlatform:looker,revenue,PROD)",
+          "entity_type": "DATASET",
+          "name": "revenue",
+          "platform": "looker",
+          "degree": 2,
+          "owner_urns": ["urn:li:corpgroup:analytics"],
+          "impacted_columns": ["total_revenue"]
+        }
+      ],
+      "lineage_complete": false,
+      "warnings": ["Lineage safety cap reached: evaluated 2 of 3 assets."]
+    },
+    "missing_field_unqueried": {
+      "source": {
+        "urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,orders,PROD)",
+        "entity_type": "DATASET",
+        "name": "orders",
+        "platform": "dbt",
+        "degree": 0,
+        "owner_urns": ["urn:li:corpuser:source-owner"]
+      },
+      "field": null,
+      "downstream_total": 0,
+      "downstream": [],
+      "lineage_complete": false,
+      "warnings": ["Column lineage was not queried because the source field was absent."]
+    },
+    "direct_only": {
+      "source": {
+        "urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,orders,PROD)",
+        "entity_type": "DATASET",
+        "name": "orders",
+        "platform": "dbt",
+        "degree": 0,
+        "owner_urns": ["urn:li:corpuser:source-owner"]
+      },
+      "field": {
+        "field_path": "order_total",
+        "native_type": "FLOAT"
+      },
+      "downstream_total": 1,
+      "downstream": [
+        {
+          "urn": "urn:li:dataset:(urn:li:dataPlatform:snowflake,order_details,PROD)",
+          "entity_type": "DATASET",
+          "name": "order_details",
+          "platform": "snowflake",
+          "degree": 1,
+          "owner_urns": ["urn:li:corpgroup:data-team"],
+          "impacted_columns": ["order_total"]
+        }
+      ],
+      "lineage_complete": true
+    }
+  },
+  "cases": [
+    {
+      "case_id": "safe-add-new-field",
+      "category": "safe-change",
+      "kind": "decision",
+      "change": "add_new_field",
+      "snapshot": "field_absent",
+      "expected": {
+        "verdict": "allow",
+        "severity": "low",
+        "reason_codes": ["BACKWARD_COMPATIBLE_ADDITION"],
+        "impacted_asset_urns": [],
+        "direct_downstream": 0,
+        "transitive_downstream": 0,
+        "evaluated_downstream": 0,
+        "lineage_complete": true,
+        "action_kinds": [],
+        "owner_routes": {},
+        "domain_routes": {}
+      }
+    },
+    {
+      "case_id": "add-existing-field",
+      "category": "contradictory-schema",
+      "kind": "decision",
+      "change": "add_existing_field",
+      "snapshot": "field_existing_no_downstream",
+      "expected": {
+        "verdict": "block",
+        "severity": "critical",
+        "reason_codes": ["SOURCE_FIELD_ALREADY_EXISTS"],
+        "impacted_asset_urns": [],
+        "direct_downstream": 0,
+        "transitive_downstream": 0,
+        "evaluated_downstream": 0,
+        "lineage_complete": true,
+        "action_kinds": ["hold_deployment"],
+        "owner_routes": {},
+        "domain_routes": {}
+      }
+    },
+    {
+      "case_id": "drop-direct-transitive-with-gap",
+      "category": "breaking-change",
+      "kind": "decision",
+      "change": "drop_order_total",
+      "snapshot": "impact_with_ownership_gap",
+      "expected": {
+        "verdict": "block",
+        "severity": "high",
+        "reason_codes": [
+          "BREAKING_CHANGE_HAS_DOWNSTREAM_IMPACT",
+          "DOWNSTREAM_OWNERSHIP_GAPS"
+        ],
+        "impacted_asset_urns": [
+          "urn:li:dataset:(urn:li:dataPlatform:snowflake,order_details,PROD)",
+          "urn:li:dataset:(urn:li:dataPlatform:looker,revenue,PROD)",
+          "urn:li:dataset:(urn:li:dataPlatform:tableau,margin,PROD)"
+        ],
+        "direct_downstream": 1,
+        "transitive_downstream": 2,
+        "evaluated_downstream": 3,
+        "lineage_complete": true,
+        "action_kinds": [
+          "hold_deployment",
+          "migrate_dependents",
+          "notify_owners",
+          "route_domains",
+          "resolve_ownership",
+          "run_validation"
+        ],
+        "owner_routes": {
+          "urn:li:corpgroup:analytics": [
+            "urn:li:dataset:(urn:li:dataPlatform:looker,revenue,PROD)"
+          ],
+          "urn:li:corpgroup:data-team": [
+            "urn:li:dataset:(urn:li:dataPlatform:snowflake,order_details,PROD)"
+          ]
+        },
+        "domain_routes": {
+          "urn:li:domain:finance": [
+            "urn:li:dataset:(urn:li:dataPlatform:tableau,margin,PROD)"
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "rename-without-consumers",
+      "category": "breaking-change",
+      "kind": "decision",
+      "change": "rename_order_total",
+      "snapshot": "field_existing_no_downstream",
+      "expected": {
+        "verdict": "review",
+        "severity": "medium",
+        "reason_codes": ["BREAKING_CHANGE_WITH_NO_KNOWN_DOWNSTREAM"],
+        "impacted_asset_urns": [],
+        "direct_downstream": 0,
+        "transitive_downstream": 0,
+        "evaluated_downstream": 0,
+        "lineage_complete": true,
+        "action_kinds": ["run_validation"],
+        "owner_routes": {},
+        "domain_routes": {}
+      }
+    },
+    {
+      "case_id": "type-change-with-impact",
+      "category": "breaking-change",
+      "kind": "decision",
+      "change": "change_order_total_type",
+      "snapshot": "impact_with_ownership_gap",
+      "expected": {
+        "verdict": "block",
+        "severity": "high",
+        "reason_codes": [
+          "BREAKING_CHANGE_HAS_DOWNSTREAM_IMPACT",
+          "DOWNSTREAM_OWNERSHIP_GAPS"
+        ],
+        "impacted_asset_urns": [
+          "urn:li:dataset:(urn:li:dataPlatform:snowflake,order_details,PROD)",
+          "urn:li:dataset:(urn:li:dataPlatform:looker,revenue,PROD)",
+          "urn:li:dataset:(urn:li:dataPlatform:tableau,margin,PROD)"
+        ],
+        "direct_downstream": 1,
+        "transitive_downstream": 2,
+        "evaluated_downstream": 3,
+        "lineage_complete": true,
+        "action_kinds": [
+          "hold_deployment",
+          "migrate_dependents",
+          "notify_owners",
+          "route_domains",
+          "resolve_ownership",
+          "run_validation"
+        ],
+        "owner_routes": {
+          "urn:li:corpgroup:analytics": [
+            "urn:li:dataset:(urn:li:dataPlatform:looker,revenue,PROD)"
+          ],
+          "urn:li:corpgroup:data-team": [
+            "urn:li:dataset:(urn:li:dataPlatform:snowflake,order_details,PROD)"
+          ]
+        },
+        "domain_routes": {
+          "urn:li:domain:finance": [
+            "urn:li:dataset:(urn:li:dataPlatform:tableau,margin,PROD)"
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "declared-type-mismatch",
+      "category": "contradictory-schema",
+      "kind": "decision",
+      "change": "mismatched_order_total_type",
+      "snapshot": "impact_with_ownership_gap",
+      "expected": {
+        "verdict": "block",
+        "severity": "critical",
+        "reason_codes": [
+          "SOURCE_TYPE_MISMATCH",
+          "DOWNSTREAM_OWNERSHIP_GAPS"
+        ],
+        "impacted_asset_urns": [
+          "urn:li:dataset:(urn:li:dataPlatform:snowflake,order_details,PROD)",
+          "urn:li:dataset:(urn:li:dataPlatform:looker,revenue,PROD)",
+          "urn:li:dataset:(urn:li:dataPlatform:tableau,margin,PROD)"
+        ],
+        "direct_downstream": 1,
+        "transitive_downstream": 2,
+        "evaluated_downstream": 3,
+        "lineage_complete": true,
+        "action_kinds": [
+          "hold_deployment",
+          "migrate_dependents",
+          "notify_owners",
+          "route_domains",
+          "resolve_ownership",
+          "run_validation"
+        ],
+        "owner_routes": {
+          "urn:li:corpgroup:analytics": [
+            "urn:li:dataset:(urn:li:dataPlatform:looker,revenue,PROD)"
+          ],
+          "urn:li:corpgroup:data-team": [
+            "urn:li:dataset:(urn:li:dataPlatform:snowflake,order_details,PROD)"
+          ]
+        },
+        "domain_routes": {
+          "urn:li:domain:finance": [
+            "urn:li:dataset:(urn:li:dataPlatform:tableau,margin,PROD)"
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "missing-source-field",
+      "category": "missing-metadata",
+      "kind": "decision",
+      "change": "drop_missing_field",
+      "snapshot": "missing_field_unqueried",
+      "expected": {
+        "verdict": "block",
+        "severity": "critical",
+        "reason_codes": ["SOURCE_FIELD_NOT_FOUND"],
+        "impacted_asset_urns": [],
+        "direct_downstream": 0,
+        "transitive_downstream": 0,
+        "evaluated_downstream": 0,
+        "lineage_complete": false,
+        "action_kinds": ["hold_deployment"],
+        "owner_routes": {},
+        "domain_routes": {}
+      }
+    },
+    {
+      "case_id": "truncated-lineage",
+      "category": "incomplete-metadata",
+      "kind": "decision",
+      "change": "drop_order_total",
+      "snapshot": "impact_truncated",
+      "expected": {
+        "verdict": "block",
+        "severity": "critical",
+        "reason_codes": ["LINEAGE_INCOMPLETE"],
+        "impacted_asset_urns": [
+          "urn:li:dataset:(urn:li:dataPlatform:snowflake,order_details,PROD)",
+          "urn:li:dataset:(urn:li:dataPlatform:looker,revenue,PROD)"
+        ],
+        "direct_downstream": 1,
+        "transitive_downstream": 1,
+        "evaluated_downstream": 2,
+        "lineage_complete": false,
+        "action_kinds": [
+          "hold_deployment",
+          "migrate_dependents",
+          "notify_owners",
+          "run_validation"
+        ],
+        "owner_routes": {
+          "urn:li:corpgroup:analytics": [
+            "urn:li:dataset:(urn:li:dataPlatform:looker,revenue,PROD)"
+          ],
+          "urn:li:corpgroup:data-team": [
+            "urn:li:dataset:(urn:li:dataPlatform:snowflake,order_details,PROD)"
+          ]
+        },
+        "domain_routes": {}
+      }
+    },
+    {
+      "case_id": "fully-owned-routing",
+      "category": "owner-routing",
+      "kind": "decision",
+      "change": "drop_order_total",
+      "snapshot": "impact_fully_owned",
+      "expected": {
+        "verdict": "block",
+        "severity": "high",
+        "reason_codes": ["BREAKING_CHANGE_HAS_DOWNSTREAM_IMPACT"],
+        "impacted_asset_urns": [
+          "urn:li:dataset:(urn:li:dataPlatform:snowflake,order_details,PROD)",
+          "urn:li:dataset:(urn:li:dataPlatform:looker,revenue,PROD)",
+          "urn:li:dataset:(urn:li:dataPlatform:tableau,margin,PROD)"
+        ],
+        "direct_downstream": 1,
+        "transitive_downstream": 2,
+        "evaluated_downstream": 3,
+        "lineage_complete": true,
+        "action_kinds": [
+          "hold_deployment",
+          "migrate_dependents",
+          "notify_owners",
+          "run_validation"
+        ],
+        "owner_routes": {
+          "urn:li:corpgroup:analytics": [
+            "urn:li:dataset:(urn:li:dataPlatform:looker,revenue,PROD)"
+          ],
+          "urn:li:corpgroup:bi": [
+            "urn:li:dataset:(urn:li:dataPlatform:tableau,margin,PROD)"
+          ],
+          "urn:li:corpgroup:data-team": [
+            "urn:li:dataset:(urn:li:dataPlatform:snowflake,order_details,PROD)"
+          ]
+        },
+        "domain_routes": {}
+      }
+    },
+    {
+      "case_id": "single-direct-consumer",
+      "category": "direct-impact",
+      "kind": "decision",
+      "change": "drop_order_total",
+      "snapshot": "direct_only",
+      "expected": {
+        "verdict": "block",
+        "severity": "high",
+        "reason_codes": ["BREAKING_CHANGE_HAS_DOWNSTREAM_IMPACT"],
+        "impacted_asset_urns": [
+          "urn:li:dataset:(urn:li:dataPlatform:snowflake,order_details,PROD)"
+        ],
+        "direct_downstream": 1,
+        "transitive_downstream": 0,
+        "evaluated_downstream": 1,
+        "lineage_complete": true,
+        "action_kinds": [
+          "hold_deployment",
+          "migrate_dependents",
+          "notify_owners",
+          "run_validation"
+        ],
+        "owner_routes": {
+          "urn:li:corpgroup:data-team": [
+            "urn:li:dataset:(urn:li:dataPlatform:snowflake,order_details,PROD)"
+          ]
+        },
+        "domain_routes": {}
+      }
+    },
+    {
+      "case_id": "reject-unsupported-action-asset",
+      "category": "unsupported-claim",
+      "kind": "artifact_validation",
+      "change": "drop_order_total",
+      "snapshot": "impact_fully_owned",
+      "tamper": "unsupported_action_asset",
+      "expected_error_substrings": [
+        "differs from the deterministic policy output",
+        "cites unsupported assets"
+      ]
+    },
+    {
+      "case_id": "reject-owner-misroute",
+      "category": "unsupported-claim",
+      "kind": "artifact_validation",
+      "change": "drop_order_total",
+      "snapshot": "impact_fully_owned",
+      "tamper": "misroute_owner",
+      "expected_error_substrings": [
+        "differs from the deterministic policy output",
+        "not owned by that route"
+      ]
+    },
+    {
+      "case_id": "reject-mutation-sql",
+      "category": "unsafe-artifact",
+      "kind": "artifact_validation",
+      "change": "drop_order_total",
+      "snapshot": "impact_fully_owned",
+      "tamper": "mutation_sql",
+      "expected_error_substrings": [
+        "differs from the deterministic policy output",
+        "contains mutation SQL"
+      ]
+    },
+    {
+      "case_id": "reject-domain-misroute",
+      "category": "unsupported-claim",
+      "kind": "artifact_validation",
+      "change": "drop_order_total",
+      "snapshot": "impact_with_ownership_gap",
+      "tamper": "misroute_domain",
+      "expected_error_substrings": [
+        "differs from the deterministic policy output",
+        "ownerless assets outside that domain"
+      ]
+    },
+    {
+      "case_id": "reject-wrong-verdict",
+      "category": "unsafe-artifact",
+      "kind": "artifact_validation",
+      "change": "drop_order_total",
+      "snapshot": "impact_fully_owned",
+      "tamper": "wrong_verdict",
+      "expected_error_substrings": [
+        "differs from the deterministic policy output",
+        "must be blocked"
+      ]
+    },
+    {
+      "case_id": "verified-write-back-receipt",
+      "category": "graph-write-back",
+      "kind": "write_back_receipt",
+      "receipt_path": "examples/drop-orders-order-total/write-back.json",
+      "minimum_related_assets": 18
+    }
+  ]
+}

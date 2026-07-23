@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "evaluation_id": "drop-orders-order-total-live",
+  "scenario_path": "scenarios/drop_orders_order_total.json",
+  "max_assets": 100,
+  "expected": {
+    "verdict": "block",
+    "severity": "high",
+    "downstream_total": 17,
+    "evaluated_downstream": 17,
+    "lineage_complete": true,
+    "validation_error_count": 0,
+    "owner_route_count": 12,
+    "domain_route_count": 1
+  }
+}

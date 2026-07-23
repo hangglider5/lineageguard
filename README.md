@@ -22,6 +22,9 @@ The first end-to-end scenario passed on 2026-07-23:
   routes, a migration checklist, and read-only validation SQL.
 - MCP `save_document` wrote the Decision back against 18 related assets. Both the
   document read-back and the source asset's `relatedDocuments` edge were verified.
+- The fixed evaluation suite passes 16/16 cases and 130/130 checks. A separate
+  live DataHub gate passes with all 17 downstream assets and records real MCP
+  workflow latency.
 
 The resulting artifacts are committed under
 [`examples/drop-orders-order-total/`](examples/drop-orders-order-total/).
@@ -104,11 +107,40 @@ type, retrieves column-level downstream lineage, compacts only attributable grap
 metadata, applies fail-closed rules, validates every cited asset/owner/query, and
 only then permits write-back.
 
+## Run the fixed evaluations
+
+The offline suite requires neither Docker nor network access:
+
+```bash
+PYTHONPATH=src .venv/bin/python -m lineageguard.evaluation \
+  evals/suite.json \
+  --output build/evaluation-report.json \
+  --markdown-output build/evaluation-report.md
+```
+
+With DataHub running, execute the read-only live gate:
+
+```bash
+PYTHONPATH=src .venv/bin/python -m lineageguard.live_evaluation \
+  evals/live.json \
+  --output build/live-evaluation.json \
+  --markdown-output build/live-evaluation.md
+```
+
+The offline report measures deterministic local policy latency; the live report
+measures the MCP-backed core workflow. See [`evals/README.md`](evals/README.md)
+for the scenario and scoring protocol, and
+[`examples/evaluation-report.md`](examples/evaluation-report.md) for the current
+offline result. The matching MCP-backed result is in
+[`examples/live-evaluation.md`](examples/live-evaluation.md).
+
 ## Tests
 
 ```bash
 PYTHONPATH=src .venv/bin/python -m unittest discover -s tests -v
 PYTHONPATH=src .venv/bin/python -m compileall -q src tests
+PYTHONPATH=src .venv/bin/python -m lineageguard.evaluation \
+  evals/suite.json --output build/evaluation-report.json
 bash -n scripts/bootstrap_local.sh
 ```
 

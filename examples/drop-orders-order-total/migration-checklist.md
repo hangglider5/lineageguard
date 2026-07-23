@@ -45,23 +45,28 @@ BLOCK drop_column of order_total: 17 downstream assets reported, 17 evaluated.
 - [ ] **hold-deployment** — Do not merge or deploy until required migration work is verified.
 - [ ] **migrate-dependents** — Update 17 discovered downstream assets or prove that they do not reference the changed field.
 - [ ] **notify-owners** — Route the migration decision to all discovered asset owners.
+- [ ] **route-domain-fallbacks** — Route ownerless impacted assets through their assigned domains.
 - [ ] **resolve-ownership** — Assign accountable owners before approving the schema change.
 - [ ] **run-source-validation** — Run the read-only population check and attach its result.
 
 ## Owner routing
 
 - `urn:li:corpGroup:b2fd91.1e0398a3-113f-475e-b6fc-32ab72a634d2` — 2 assets
-- `urn:li:corpGroup:b2fd91.ORG_BACKEND_ENG` — 1 assets
+- `urn:li:corpGroup:b2fd91.ORG_BACKEND_ENG` — 1 asset
 - `urn:li:corpGroup:b2fd91.ORG_DATA_PLATFORM` — 3 assets
 - `urn:li:corpuser:b2fd91.EMP006` — 3 assets
-- `urn:li:corpuser:b2fd91.alex@example.com` — 1 assets
+- `urn:li:corpuser:b2fd91.alex@example.com` — 1 asset
 - `urn:li:corpuser:b2fd91.brock1@example.com` — 4 assets
-- `urn:li:corpuser:b2fd91.bryan@example.com` — 1 assets
+- `urn:li:corpuser:b2fd91.bryan@example.com` — 1 asset
 - `urn:li:corpuser:b2fd91.jonny1@example.com` — 2 assets
-- `urn:li:corpuser:b2fd91.jonny2@example.com` — 1 assets
+- `urn:li:corpuser:b2fd91.jonny2@example.com` — 1 asset
 - `urn:li:corpuser:b2fd91.kirk@example.com` — 2 assets
 - `urn:li:corpuser:b2fd91.marty@example.com` — 2 assets
-- `urn:li:corpuser:b2fd91.sam@example.com` — 1 assets
+- `urn:li:corpuser:b2fd91.sam@example.com` — 1 asset
+
+## Domain fallback routing
+
+- `urn:li:domain:b2fd91.d4f24004-fb54-4e3c-8dea-2b7e209230b0` — 1 ownerless asset
 
 ## Validation SQL
 

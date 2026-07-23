@@ -9,6 +9,7 @@ from .models import (
     ChangeKind,
     DecisionArtifact,
     DecisionEvidence,
+    DomainRoute,
     ImpactSnapshot,
     OwnerRoute,
     SchemaChange,
@@ -33,6 +34,20 @@ def _owner_routes(snapshot: ImpactSnapshot) -> list[OwnerRoute]:
     return [
         OwnerRoute(owner_urn=owner, asset_urns=sorted(asset_urns))
         for owner, asset_urns in sorted(routed_assets.items())
+    ]
+
+
+def _domain_routes(snapshot: ImpactSnapshot) -> list[DomainRoute]:
+    """Route ownerless assets through their directly assigned domains."""
+
+    routed_assets: dict[str, set[str]] = defaultdict(set)
+    for asset in snapshot.downstream:
+        if not asset.owner_urns:
+            for domain_urn in asset.domain_urns:
+                routed_assets[domain_urn].add(asset.urn)
+    return [
+        DomainRoute(domain_urn=domain, asset_urns=sorted(asset_urns))
+        for domain, asset_urns in sorted(routed_assets.items())
     ]
 
 
@@ -109,7 +124,9 @@ def decide(change: SchemaChange, snapshot: ImpactSnapshot) -> DecisionArtifact:
     direct_count = sum(asset.degree == 1 for asset in snapshot.downstream)
     transitive_count = sum(asset.degree > 1 for asset in snapshot.downstream)
     owner_routes = _owner_routes(snapshot)
+    domain_routes = _domain_routes(snapshot)
     impacted_urns = sorted(asset.urn for asset in snapshot.downstream)
+    validation_queries = _validation_queries(change, snapshot)
     actions: list[ActionItem] = []
 
     if verdict == Verdict.BLOCK:
@@ -134,13 +151,31 @@ def decide(change: SchemaChange, snapshot: ImpactSnapshot) -> DecisionArtifact:
             )
         )
     if owner_routes:
+        owned_asset_urns = sorted(
+            {asset for route in owner_routes for asset in route.asset_urns}
+        )
         actions.append(
             ActionItem(
                 action_id="notify-owners",
                 kind="notify_owners",
                 description="Route the migration decision to all discovered asset owners.",
-                asset_urns=impacted_urns,
+                asset_urns=owned_asset_urns,
                 owner_urns=[route.owner_urn for route in owner_routes],
+            )
+        )
+    if domain_routes:
+        domain_asset_urns = sorted(
+            {asset for route in domain_routes for asset in route.asset_urns}
+        )
+        actions.append(
+            ActionItem(
+                action_id="route-domain-fallbacks",
+                kind="route_domains",
+                description=(
+                    "Route ownerless impacted assets through their assigned domains."
+                ),
+                asset_urns=domain_asset_urns,
+                domain_urns=[route.domain_urn for route in domain_routes],
             )
         )
     if missing_owner_assets:
@@ -152,7 +187,7 @@ def decide(change: SchemaChange, snapshot: ImpactSnapshot) -> DecisionArtifact:
                 asset_urns=missing_owner_assets,
             )
         )
-    if breaking:
+    if validation_queries:
         actions.append(
             ActionItem(
                 action_id="run-source-validation",
@@ -187,8 +222,9 @@ def decide(change: SchemaChange, snapshot: ImpactSnapshot) -> DecisionArtifact:
         ),
         impacted_assets=sorted(snapshot.downstream, key=lambda asset: asset.urn),
         owner_routes=owner_routes,
+        domain_routes=domain_routes,
         reason_codes=reasons,
         required_actions=actions,
-        validation_queries=_validation_queries(change, snapshot),
+        validation_queries=validation_queries,
         warnings=warnings,
     )

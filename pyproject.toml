@@ -19,6 +19,8 @@ dependencies = [
 [project.scripts]
 lineageguard-probe-mcp = "lineageguard.mcp_probe:main"
 lineageguard-run = "lineageguard.workflow:main"
+lineageguard-eval = "lineageguard.evaluation:main"
+lineageguard-live-eval = "lineageguard.live_evaluation:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

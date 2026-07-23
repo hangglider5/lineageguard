@@ -1,0 +1,372 @@
+{
+  "schema_version": "1.0",
+  "suite_id": "lineageguard-fixed-v1",
+  "execution_scope": "offline_policy_and_artifact_validation",
+  "total_cases": 16,
+  "passed_cases": 16,
+  "pass_rate": 1.0,
+  "total_checks": 130,
+  "passed_checks": 130,
+  "metrics": {
+    "artifact_guardrail_rejection": {
+      "passed": 2,
+      "total": 2,
+      "rate": 1.0
+    },
+    "artifact_validity": {
+      "passed": 10,
+      "total": 10,
+      "rate": 1.0
+    },
+    "determinism": {
+      "passed": 10,
+      "total": 10,
+      "rate": 1.0
+    },
+    "impacted_asset_accuracy": {
+      "passed": 10,
+      "total": 10,
+      "rate": 1.0
+    },
+    "policy_detail_accuracy": {
+      "passed": 10,
+      "total": 10,
+      "rate": 1.0
+    },
+    "task_completion": {
+      "passed": 16,
+      "total": 16,
+      "rate": 1.0
+    },
+    "unsupported_claim_prevention": {
+      "passed": 3,
+      "total": 3,
+      "rate": 1.0
+    },
+    "verdict_accuracy": {
+      "passed": 10,
+      "total": 10,
+      "rate": 1.0
+    },
+    "write_back_evidence": {
+      "passed": 1,
+      "total": 1,
+      "rate": 1.0
+    }
+  },
+  "offline_latency_ms": {
+    "p50": 0.087,
+    "p95": 0.725,
+    "maximum": 0.725
+  },
+  "cases": [
+    {
+      "case_id": "safe-add-new-field",
+      "category": "safe-change",
+      "kind": "decision",
+      "passed": true,
+      "checks": {
+        "artifact_valid": true,
+        "deterministic": true,
+        "verdict": true,
+        "severity": true,
+        "reason_codes": true,
+        "impacted_assets": true,
+        "impact_counts": true,
+        "lineage_complete": true,
+        "action_kinds": true,
+        "owner_routes": true,
+        "domain_routes": true
+      },
+      "details": [],
+      "latency_ms": 0.725
+    },
+    {
+      "case_id": "add-existing-field",
+      "category": "contradictory-schema",
+      "kind": "decision",
+      "passed": true,
+      "checks": {
+        "artifact_valid": true,
+        "deterministic": true,
+        "verdict": true,
+        "severity": true,
+        "reason_codes": true,
+        "impacted_assets": true,
+        "impact_counts": true,
+        "lineage_complete": true,
+        "action_kinds": true,
+        "owner_routes": true,
+        "domain_routes": true
+      },
+      "details": [],
+      "latency_ms": 0.049
+    },
+    {
+      "case_id": "drop-direct-transitive-with-gap",
+      "category": "breaking-change",
+      "kind": "decision",
+      "passed": true,
+      "checks": {
+        "artifact_valid": true,
+        "deterministic": true,
+        "verdict": true,
+        "severity": true,
+        "reason_codes": true,
+        "impacted_assets": true,
+        "impact_counts": true,
+        "lineage_complete": true,
+        "action_kinds": true,
+        "owner_routes": true,
+        "domain_routes": true
+      },
+      "details": [],
+      "latency_ms": 0.142
+    },
+    {
+      "case_id": "rename-without-consumers",
+      "category": "breaking-change",
+      "kind": "decision",
+      "passed": true,
+      "checks": {
+        "artifact_valid": true,
+        "deterministic": true,
+        "verdict": true,
+        "severity": true,
+        "reason_codes": true,
+        "impacted_assets": true,
+        "impact_counts": true,
+        "lineage_complete": true,
+        "action_kinds": true,
+        "owner_routes": true,
+        "domain_routes": true
+      },
+      "details": [],
+      "latency_ms": 0.051
+    },
+    {
+      "case_id": "type-change-with-impact",
+      "category": "breaking-change",
+      "kind": "decision",
+      "passed": true,
+      "checks": {
+        "artifact_valid": true,
+        "deterministic": true,
+        "verdict": true,
+        "severity": true,
+        "reason_codes": true,
+        "impacted_assets": true,
+        "impact_counts": true,
+        "lineage_complete": true,
+        "action_kinds": true,
+        "owner_routes": true,
+        "domain_routes": true
+      },
+      "details": [],
+      "latency_ms": 0.106
+    },
+    {
+      "case_id": "declared-type-mismatch",
+      "category": "contradictory-schema",
+      "kind": "decision",
+      "passed": true,
+      "checks": {
+        "artifact_valid": true,
+        "deterministic": true,
+        "verdict": true,
+        "severity": true,
+        "reason_codes": true,
+        "impacted_assets": true,
+        "impact_counts": true,
+        "lineage_complete": true,
+        "action_kinds": true,
+        "owner_routes": true,
+        "domain_routes": true
+      },
+      "details": [],
+      "latency_ms": 0.107
+    },
+    {
+      "case_id": "missing-source-field",
+      "category": "missing-metadata",
+      "kind": "decision",
+      "passed": true,
+      "checks": {
+        "artifact_valid": true,
+        "deterministic": true,
+        "verdict": true,
+        "severity": true,
+        "reason_codes": true,
+        "impacted_assets": true,
+        "impact_counts": true,
+        "lineage_complete": true,
+        "action_kinds": true,
+        "owner_routes": true,
+        "domain_routes": true
+      },
+      "details": [],
+      "latency_ms": 0.039
+    },
+    {
+      "case_id": "truncated-lineage",
+      "category": "incomplete-metadata",
+      "kind": "decision",
+      "passed": true,
+      "checks": {
+        "artifact_valid": true,
+        "deterministic": true,
+        "verdict": true,
+        "severity": true,
+        "reason_codes": true,
+        "impacted_assets": true,
+        "impact_counts": true,
+        "lineage_complete": true,
+        "action_kinds": true,
+        "owner_routes": true,
+        "domain_routes": true
+      },
+      "details": [],
+      "latency_ms": 0.162
+    },
+    {
+      "case_id": "fully-owned-routing",
+      "category": "owner-routing",
+      "kind": "decision",
+      "passed": true,
+      "checks": {
+        "artifact_valid": true,
+        "deterministic": true,
+        "verdict": true,
+        "severity": true,
+        "reason_codes": true,
+        "impacted_assets": true,
+        "impact_counts": true,
+        "lineage_complete": true,
+        "action_kinds": true,
+        "owner_routes": true,
+        "domain_routes": true
+      },
+      "details": [],
+      "latency_ms": 0.097
+    },
+    {
+      "case_id": "single-direct-consumer",
+      "category": "direct-impact",
+      "kind": "decision",
+      "passed": true,
+      "checks": {
+        "artifact_valid": true,
+        "deterministic": true,
+        "verdict": true,
+        "severity": true,
+        "reason_codes": true,
+        "impacted_assets": true,
+        "impact_counts": true,
+        "lineage_complete": true,
+        "action_kinds": true,
+        "owner_routes": true,
+        "domain_routes": true
+      },
+      "details": [],
+      "latency_ms": 0.06
+    },
+    {
+      "case_id": "reject-unsupported-action-asset",
+      "category": "unsupported-claim",
+      "kind": "artifact_validation",
+      "passed": true,
+      "checks": {
+        "baseline_valid": true,
+        "artifact_rejected": true,
+        "expected_errors": true
+      },
+      "details": [
+        "artifact differs from the deterministic policy output",
+        "action hold-deployment cites unsupported assets: urn:li:dataset:(urn:li:dataPlatform:test,unsupported,PROD)"
+      ],
+      "latency_ms": 0.083
+    },
+    {
+      "case_id": "reject-owner-misroute",
+      "category": "unsupported-claim",
+      "kind": "artifact_validation",
+      "passed": true,
+      "checks": {
+        "baseline_valid": true,
+        "artifact_rejected": true,
+        "expected_errors": true
+      },
+      "details": [
+        "artifact differs from the deterministic policy output",
+        "owner route cites assets not owned by that route: urn:li:dataset:(urn:li:dataPlatform:snowflake,order_details,PROD)"
+      ],
+      "latency_ms": 0.087
+    },
+    {
+      "case_id": "reject-mutation-sql",
+      "category": "unsafe-artifact",
+      "kind": "artifact_validation",
+      "passed": true,
+      "checks": {
+        "baseline_valid": true,
+        "artifact_rejected": true,
+        "expected_errors": true
+      },
+      "details": [
+        "artifact differs from the deterministic policy output",
+        "validation query source-field-population is not read-only SELECT",
+        "validation query source-field-population contains mutation SQL",
+        "validation query source-field-population omits the changed field",
+        "validation query source-field-population omits the target relation"
+      ],
+      "latency_ms": 0.078
+    },
+    {
+      "case_id": "reject-domain-misroute",
+      "category": "unsupported-claim",
+      "kind": "artifact_validation",
+      "passed": true,
+      "checks": {
+        "baseline_valid": true,
+        "artifact_rejected": true,
+        "expected_errors": true
+      },
+      "details": [
+        "artifact differs from the deterministic policy output",
+        "domain route cites ownerless assets outside that domain: urn:li:dataset:(urn:li:dataPlatform:looker,revenue,PROD)"
+      ],
+      "latency_ms": 0.087
+    },
+    {
+      "case_id": "reject-wrong-verdict",
+      "category": "unsafe-artifact",
+      "kind": "artifact_validation",
+      "passed": true,
+      "checks": {
+        "baseline_valid": true,
+        "artifact_rejected": true,
+        "expected_errors": true
+      },
+      "details": [
+        "artifact differs from the deterministic policy output",
+        "a breaking change with downstream impact must be blocked"
+      ],
+      "latency_ms": 0.072
+    },
+    {
+      "case_id": "verified-write-back-receipt",
+      "category": "graph-write-back",
+      "kind": "write_back_receipt",
+      "passed": true,
+      "checks": {
+        "write_succeeded": true,
+        "document_read_back": true,
+        "source_relationship": true,
+        "document_urn": true,
+        "related_assets": true
+      },
+      "details": [],
+      "latency_ms": 0.126
+    }
+  ]
+}

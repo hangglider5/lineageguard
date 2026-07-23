@@ -87,6 +87,39 @@ def validate_artifact(
                 f"{', '.join(sorted(unsupported))}"
             )
 
+    domain_assets: dict[str, set[str]] = {}
+    for asset in snapshot.downstream:
+        if not asset.owner_urns:
+            for domain in asset.domain_urns:
+                domain_assets.setdefault(domain, set()).add(asset.urn)
+    for route in artifact.domain_routes:
+        if route.domain_urn not in domain_assets:
+            errors.append(f"domain route is unsupported: {route.domain_urn}")
+        unsupported = set(route.asset_urns) - domain_assets.get(
+            route.domain_urn, set()
+        )
+        if unsupported:
+            errors.append(
+                "domain route cites ownerless assets outside that domain: "
+                f"{', '.join(sorted(unsupported))}"
+            )
+
+    supported_owners = set(owner_assets)
+    supported_domains = set(domain_assets)
+    for action in artifact.required_actions:
+        unsupported_owners = set(action.owner_urns) - supported_owners
+        if unsupported_owners:
+            errors.append(
+                f"action {action.action_id} cites unsupported owners: "
+                + ", ".join(sorted(unsupported_owners))
+            )
+        unsupported_domains = set(action.domain_urns) - supported_domains
+        if unsupported_domains:
+            errors.append(
+                f"action {action.action_id} cites unsupported domains: "
+                + ", ".join(sorted(unsupported_domains))
+            )
+
     for query in artifact.validation_queries:
         normalized = query.sql.strip()
         if not normalized.upper().startswith("SELECT "):
@@ -103,6 +136,11 @@ def validate_artifact(
 
 def render_markdown(artifact: DecisionArtifact) -> str:
     """Render a stable human-reviewable migration decision."""
+
+    def asset_count(count: int, *, ownerless: bool = False) -> str:
+        qualifier = "ownerless " if ownerless else ""
+        noun = "asset" if count == 1 else "assets"
+        return f"{count} {qualifier}{noun}"
 
     lines = [
         f"# LineageGuard decision: {artifact.scenario_id}",
@@ -167,11 +205,21 @@ def render_markdown(artifact: DecisionArtifact) -> str:
     lines.extend(["", "## Owner routing", ""])
     if artifact.owner_routes:
         lines.extend(
-            f"- `{route.owner_urn}` — {len(route.asset_urns)} assets"
+            f"- `{route.owner_urn}` — {asset_count(len(route.asset_urns))}"
             for route in artifact.owner_routes
         )
     else:
         lines.append("- No owners were present in the retrieved evidence.")
+
+    lines.extend(["", "## Domain fallback routing", ""])
+    if artifact.domain_routes:
+        lines.extend(
+            f"- `{route.domain_urn}` — "
+            f"{asset_count(len(route.asset_urns), ownerless=True)}"
+            for route in artifact.domain_routes
+        )
+    else:
+        lines.append("- No ownerless assets had an assigned domain fallback.")
 
     lines.extend(["", "## Validation SQL", ""])
     if artifact.validation_queries:
