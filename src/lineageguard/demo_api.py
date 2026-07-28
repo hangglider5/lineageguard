@@ -17,7 +17,7 @@ from typing import Awaitable, Callable, Sequence
 from pydantic import ValidationError
 from starlette.applications import Starlette
 from starlette.requests import Request
-from starlette.responses import JSONResponse, Response
+from starlette.responses import HTMLResponse, JSONResponse, Response
 from starlette.routing import Route
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
@@ -27,6 +27,11 @@ from .workflow import WorkflowResult, run_workflow
 
 
 DEMO_SCENARIO_ID = "drop-orders-order-total"
+STATIC_CONTENT_TYPES = {
+    "demo.css": "text/css; charset=utf-8",
+    "demo.js": "application/javascript; charset=utf-8",
+    "favicon.svg": "image/svg+xml",
+}
 
 
 class DemoReviewRequest(StrictModel):
@@ -129,7 +134,13 @@ class SecurityHeadersMiddleware:
                 headers.extend(
                     [
                         (b"cache-control", b"no-store"),
-                        (b"content-security-policy", b"default-src 'none'"),
+                        (
+                            b"content-security-policy",
+                            b"default-src 'none'; style-src 'self'; "
+                            b"script-src 'self'; connect-src 'self'; "
+                            b"img-src 'self'; base-uri 'none'; "
+                            b"form-action 'none'; frame-ancestors 'none'",
+                        ),
                         (b"referrer-policy", b"no-referrer"),
                         (b"x-content-type-options", b"nosniff"),
                         (b"x-frame-options", b"DENY"),
@@ -192,6 +203,10 @@ def _authorized(request: Request, api_key: str) -> bool:
     )
 
 
+def _static_resource(name: str) -> str:
+    return files("lineageguard").joinpath("static", name).read_text("utf-8")
+
+
 def create_app(
     settings: DemoSettings | None = None,
     *,
@@ -206,6 +221,16 @@ def create_app(
         configuration.max_concurrent_requests,
         configuration.concurrency_wait_seconds,
     )
+
+    async def index(_: Request) -> Response:
+        return HTMLResponse(_static_resource("index.html"))
+
+    async def static_asset(request: Request) -> Response:
+        name = request.path_params["name"]
+        media_type = STATIC_CONTENT_TYPES.get(name)
+        if media_type is None:
+            return Response(status_code=404)
+        return Response(_static_resource(name), media_type=media_type)
 
     async def health(_: Request) -> Response:
         return JSONResponse(
@@ -325,6 +350,8 @@ def create_app(
     application = Starlette(
         debug=False,
         routes=[
+            Route("/", index, methods=["GET"]),
+            Route("/assets/{name:str}", static_asset, methods=["GET"]),
             Route("/health", health, methods=["GET"]),
             Route("/api/scenarios", scenarios, methods=["GET"]),
             Route("/api/review", review, methods=["POST"]),

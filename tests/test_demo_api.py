@@ -56,6 +56,36 @@ class DemoApiTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.headers["x-frame-options"], "DENY")
         self.assertEqual(self.calls, [])
 
+    async def test_demo_page_and_assets_are_served_with_strict_csp(self) -> None:
+        async with self.client() as client:
+            page = await client.get("/")
+            stylesheet = await client.get("/assets/demo.css")
+            script = await client.get("/assets/demo.js")
+            favicon = await client.get("/assets/favicon.svg")
+
+        self.assertEqual(page.status_code, 200)
+        self.assertIn("Drop orders.order_total?", page.text)
+        self.assertIn('src="/assets/demo.js"', page.text)
+        self.assertNotIn("<script>", page.text)
+        self.assertEqual(stylesheet.status_code, 200)
+        self.assertIn("--blue: #075ee6", stylesheet.text)
+        self.assertEqual(script.status_code, 200)
+        self.assertIn('fetch("/api/review"', script.text)
+        self.assertEqual(favicon.status_code, 200)
+        self.assertEqual(favicon.headers["content-type"], "image/svg+xml")
+        csp = page.headers["content-security-policy"]
+        self.assertIn("script-src 'self'", csp)
+        self.assertIn("connect-src 'self'", csp)
+        self.assertIn("frame-ancestors 'none'", csp)
+        self.assertEqual(self.calls, [])
+
+    async def test_static_asset_allowlist_rejects_unknown_files(self) -> None:
+        async with self.client() as client:
+            response = await client.get("/assets/demo_scenario.json")
+
+        self.assertEqual(response.status_code, 404)
+        self.assertNotIn("order_total", response.text)
+
     async def test_review_runs_only_fixed_read_only_workflow(self) -> None:
         async with self.client() as client:
             response = await client.post(

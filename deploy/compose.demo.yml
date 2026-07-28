@@ -1,0 +1,23 @@
+services:
+  lineageguard-demo:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: lineageguard-demo:local
+    init: true
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${LINEAGEGUARD_PORT:-8000}:8000"
+    environment:
+      DATAHUB_GMS_URL: "${DATAHUB_GMS_URL:?set DATAHUB_GMS_URL}"
+      DATAHUB_GMS_TOKEN: "${DATAHUB_GMS_TOKEN:?set DATAHUB_GMS_TOKEN}"
+      LINEAGEGUARD_REQUIRE_DATAHUB_AUTH: "true"
+      LINEAGEGUARD_DEMO_API_KEY: "${LINEAGEGUARD_DEMO_API_KEY:-}"
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 128

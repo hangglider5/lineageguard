@@ -40,3 +40,38 @@ jobs:
 
       - name: Run deterministic CI gate
         run: ./scripts/ci.sh
+
+  container-smoke:
+    name: Container smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Validate deployment configuration
+        env:
+          DATAHUB_GMS_URL: https://datahub.example.com
+          DATAHUB_GMS_TOKEN: ci-non-secret-placeholder
+        run: docker compose -f deploy/compose.demo.yml config --quiet
+
+      - name: Build demo image
+        run: docker build --tag lineageguard-demo:ci .
+
+      - name: Verify non-root demo surface
+        run: |
+          container_id="$(docker run --rm --detach \
+            --publish 127.0.0.1:8000:8000 \
+            --env DATAHUB_GMS_URL=https://datahub.example.com \
+            --env DATAHUB_GMS_TOKEN=ci-non-secret-placeholder \
+            lineageguard-demo:ci)"
+          trap 'docker stop "$container_id"' EXIT
+          test "$(docker inspect --format '{{.Config.User}}' "$container_id")" = "10001:10001"
+          curl --fail --silent --show-error \
+            --retry 20 --retry-delay 1 --retry-connrefused \
+            http://127.0.0.1:8000/health
+          curl --fail --silent --show-error http://127.0.0.1:8000/ \
+            | python3 -c 'import sys; assert "LineageGuard" in sys.stdin.read()'
+          curl --fail --silent --show-error http://127.0.0.1:8000/assets/demo.css \
+            | python3 -c 'import sys; assert "--blue: #075ee6" in sys.stdin.read()'

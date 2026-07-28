@@ -30,6 +30,9 @@ The first end-to-end scenario passed on 2026-07-23:
   HTTPS and `DATAHUB_GMS_TOKEN`.
 - A fixed-scenario, read-only demo API runs the same MCP workflow with request
   limits, timeouts, optional API-key protection, and no public write surface.
+- The API now serves a responsive single-screen demo UI with real loading,
+  authenticated-access, rate-limit, timeout, upstream, and validation failure
+  states. GitHub Actions also builds and smoke-tests the non-root container.
 - Metadata Service Authentication was enabled for a local rehearsal and a
   one-hour PAT completed authenticated MCP read, write-back, and both read-back
   checks. Least-privilege policy scoping remains a deployment gate.
@@ -169,8 +172,12 @@ Then request the only public review scenario:
 curl -fsS \
   -H 'Content-Type: application/json' \
   -d '{"scenario_id":"drop-orders-order-total"}' \
-  http://127.0.0.1:8000/api/review
+http://127.0.0.1:8000/api/review
 ```
+
+Or open `http://127.0.0.1:8000/` to run the same review from the responsive demo
+UI. The page renders only code-native assets served by LineageGuard itself; it
+has no analytics, third-party scripts, fonts, or image requests.
 
 The public API always runs `write_back=False`; callers cannot provide asset URNs,
 DataHub endpoints, commands, or filesystem paths. Container and hosted deployment

@@ -29,4 +29,4 @@ lineageguard-demo-api = "lineageguard.demo_api:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-lineageguard = ["demo_scenario.json"]
+lineageguard = ["demo_scenario.json", "static/*"]

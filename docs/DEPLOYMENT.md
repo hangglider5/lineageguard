@@ -3,8 +3,10 @@
 ## Pull-request gate
 
 The GitHub Actions workflow runs `scripts/ci.sh` on every push and pull request,
-plus manual dispatch after the repository is published. The same entry point is
-available locally:
+plus manual dispatch after the repository is published. A separate container
+smoke job validates the Compose configuration, builds the exact Dockerfile,
+asserts the runtime user is `10001:10001`, and requests the health, HTML, and CSS
+surfaces. The same deterministic test entry point is available locally:
 
 ```bash
 LINEAGEGUARD_PYTHON=.venv/bin/python ./scripts/ci.sh
@@ -28,8 +30,9 @@ PYTHONPATH=src .venv/bin/python -m lineageguard.live_evaluation \
 
 ## Fixed-scenario demo API
 
-The public API exposes only three routes:
+The public service exposes a same-origin product surface and three API routes:
 
+- `GET /` and the allowlisted `/assets/demo.css` and `/assets/demo.js`
 - `GET /health`
 - `GET /api/scenarios`
 - `POST /api/review`
@@ -40,7 +43,9 @@ second upstream timeout. It rejects extra fields, bodies over 1 KiB, unsupported
 content types, more than 10 requests per client per minute, and more than two
 concurrent MCP workflows. Invalid artifacts fail closed. The service does not
 enable CORS, trust caller-supplied forwarding headers, or expose exception
-details.
+details. A restrictive Content Security Policy permits only same-origin CSS,
+JavaScript, and API connections. The interface includes loading, access-key,
+rate-limit, timeout, upstream, and artifact-validation failure states.
 
 Run it locally:
 
@@ -72,6 +77,22 @@ docker run --rm -p 8000:8000 --env-file .env lineageguard-demo
 
 The container passes `--require-datahub-auth` by default and runs as UID/GID
 10001.
+
+For a hardened single-host deployment, use the committed Compose definition:
+
+```bash
+export DATAHUB_GMS_URL="https://datahub.example.com"
+export DATAHUB_GMS_TOKEN="replace-with-a-scoped-token"
+export LINEAGEGUARD_DEMO_API_KEY="replace-with-a-demo-access-key"
+docker compose -f deploy/compose.demo.yml up --build --detach
+```
+
+The service binds only to `127.0.0.1:${LINEAGEGUARD_PORT:-8000}` for placement
+behind an HTTPS reverse proxy. It uses a read-only root filesystem, a bounded
+temporary filesystem, drops all Linux capabilities, enables
+`no-new-privileges`, and caps process count. Terminate TLS and apply any
+internet-wide rate limiting at the reverse proxy; the application deliberately
+does not trust forwarded client headers.
 
 ## Remote DataHub requirements
 

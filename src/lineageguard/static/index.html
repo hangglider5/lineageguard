@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Trace the DataHub blast radius of a breaking schema change.">
+    <title>LineageGuard · Impact review for DataHub</title>
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/assets/demo.css">
+    <script src="/assets/demo.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="LineageGuard home">
+        <svg class="brand-mark" viewBox="0 0 32 38" aria-hidden="true">
+          <path d="M16 2 29 7v10c0 8.3-5.2 15-13 19C8.2 32 3 25.3 3 17V7Z"/>
+          <path d="M11 10v14m10-14v14M11 14h10M16 14v7m0 0-5 3m5-3 5 3"/>
+        </svg>
+        <span>LineageGuard</span>
+      </a>
+      <p>Impact review for DataHub</p>
+      <div class="topbar-status">
+        <span class="status-dot" aria-hidden="true"></span>
+        Read-only public demo
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="change-panel" aria-labelledby="change-heading">
+        <div>
+          <h1 id="change-heading">Drop orders.order_total?</h1>
+          <p class="lede">Trace downstream impact before a breaking schema change ships.</p>
+        </div>
+
+        <dl class="change-facts">
+          <div>
+            <dt>Source</dt>
+            <dd><strong>dbt</strong><span>orders</span><span>PROD</span></dd>
+          </div>
+          <div>
+            <dt>Column</dt>
+            <dd><code>order_total</code><span>FLOAT</span></dd>
+          </div>
+          <div>
+            <dt>Change</dt>
+            <dd><strong>Drop column</strong><span>Breaking</span></dd>
+          </div>
+        </dl>
+
+        <div class="run-region">
+          <button id="run-review" class="primary-button" type="button">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7 4 7 6-7 6Z"/></svg>
+            <span>Run impact review</span>
+          </button>
+          <p id="run-help">Runs a real review with the latest DataHub lineage.</p>
+        </div>
+      </section>
+
+      <section class="decision-panel" aria-labelledby="decision-heading">
+        <div class="decision-heading-row">
+          <h2 id="decision-heading">Decision</h2>
+          <span id="result-freshness">Ready to run</span>
+        </div>
+
+        <div id="empty-state" class="empty-state">
+          <div class="empty-rail" aria-hidden="true"></div>
+          <div>
+            <h3>See the blast radius before it ships.</h3>
+            <p>LineageGuard will read the fixed DataHub scenario, evaluate every discovered dependency, and validate the resulting action plan.</p>
+          </div>
+        </div>
+
+        <div id="loading-state" class="loading-state" hidden aria-live="polite">
+          <div class="progress-line" aria-hidden="true"></div>
+          <p>Reading schema, ownership, and downstream lineage…</p>
+          <ol>
+            <li>Resolve the source column</li>
+            <li>Trace direct and transitive impact</li>
+            <li>Validate the decision artifact</li>
+          </ol>
+        </div>
+
+        <div id="error-state" class="error-state" hidden role="alert">
+          <span class="error-rule" aria-hidden="true"></span>
+          <div>
+            <h3 id="error-title">Review unavailable</h3>
+            <p id="error-message">The review could not be completed.</p>
+            <form id="access-key-form" hidden>
+              <label for="access-key">Demo access key</label>
+              <div class="access-key-row">
+                <input id="access-key" name="access-key" type="password" autocomplete="off" required>
+                <button type="submit">Retry review</button>
+              </div>
+            </form>
+            <button id="retry-review" class="text-button" type="button">Try again</button>
+          </div>
+        </div>
+
+        <div id="result-state" hidden aria-live="polite">
+          <div class="verdict-rule" aria-hidden="true"></div>
+          <div class="verdict-grid">
+            <div class="verdict-block">
+              <span class="metric-label">Verdict</span>
+              <strong id="verdict">BLOCK</strong>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Severity</span>
+              <strong id="severity">HIGH</strong>
+            </div>
+            <div class="metric">
+              <strong id="downstream-total">17</strong>
+              <span>downstream assets</span>
+            </div>
+            <div class="metric completeness">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg>
+              <span id="lineage-complete">Lineage complete</span>
+            </div>
+          </div>
+
+          <p id="decision-summary" class="decision-summary">This column feeds downstream assets across the analytics stack.</p>
+
+          <section class="lineage-section" aria-labelledby="lineage-heading">
+            <div class="section-heading-row">
+              <h3 id="lineage-heading">Downstream lineage</h3>
+              <span>Representative paths</span>
+            </div>
+            <div class="lineage-flow">
+              <div class="source-node">
+                <code>orders.order_total</code>
+                <span>Source column</span>
+              </div>
+              <div class="lineage-rail" aria-hidden="true"><i></i><i></i><i></i></div>
+              <ol id="lineage-assets" class="lineage-assets">
+                <li><strong>order_details</strong><span>dbt · degree 1</span></li>
+                <li><strong>Order Details</strong><span>Looker · degree 4</span></li>
+                <li><strong>Customer Analytics Measures</strong><span>Power BI · degree 3</span></li>
+              </ol>
+              <span id="more-assets" class="more-assets">+14 more</span>
+            </div>
+          </section>
+
+          <section class="actions-section" aria-labelledby="actions-heading">
+            <h3 id="actions-heading">Required actions</h3>
+            <ul class="action-list">
+              <li><span class="action-index">01</span><strong>Notify owners</strong><span id="owners-detail">Route to discovered owners</span></li>
+              <li><span class="action-index">02</span><strong>Stage compatibility migration</strong><span id="migration-detail">Update impacted assets</span></li>
+              <li><span class="action-index">03</span><strong>Run validation queries</strong><span id="query-detail">Verify source population</span></li>
+            </ul>
+          </section>
+
+          <div class="validation-row">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg>
+            <span>Artifact validated · 0 unsupported claims</span>
+            <span id="latency"></span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="8" width="12" height="9" rx="1"/><path d="M7 8V6a3 3 0 0 1 6 0v2"/></svg>
+      <span>Read-only public demo · No graph changes</span>
+    </footer>
+  </body>
+</html>
