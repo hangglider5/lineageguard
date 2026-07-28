@@ -7,8 +7,10 @@ import asyncio
 import json
 import os
 import sys
+from ipaddress import ip_address
 from pathlib import Path
 from typing import Any, Sequence
+from urllib.parse import urlparse
 
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
@@ -37,6 +39,35 @@ class WorkflowResult(BaseModel):
     artifact: DecisionArtifact
     validation_errors: list[str]
     write_back: WriteBackReceipt | None = None
+
+
+def validate_connection_policy(
+    gms_url: str,
+    *,
+    require_token: bool = False,
+    environment: dict[str, str] | None = None,
+) -> None:
+    """Reject unsafe remote GMS connections before launching the MCP process."""
+    parsed = urlparse(gms_url)
+    if parsed.scheme not in {"http", "https"} or not parsed.hostname:
+        raise ValueError("gms_url must be an absolute HTTP or HTTPS URL")
+    if parsed.username is not None or parsed.password is not None:
+        raise ValueError("gms_url must not contain embedded credentials")
+
+    hostname = parsed.hostname.lower()
+    is_loopback = hostname == "localhost"
+    try:
+        is_loopback = is_loopback or ip_address(hostname).is_loopback
+    except ValueError:
+        pass
+
+    token = (environment if environment is not None else os.environ).get(
+        "DATAHUB_TOKEN", ""
+    )
+    if not is_loopback and parsed.scheme != "https":
+        raise ValueError("remote DataHub connections require HTTPS")
+    if (require_token or not is_loopback) and not token.strip():
+        raise ValueError("this DataHub connection requires DATAHUB_TOKEN")
 
 
 async def _write_back(
@@ -99,10 +130,14 @@ async def run_workflow(
     max_assets: int = 100,
     write_back: bool = False,
     document_urn: str | None = None,
+    require_token: bool = False,
 ) -> WorkflowResult:
     if document_urn and not write_back:
         raise ValueError("document_urn requires write_back")
     child_env = os.environ.copy()
+    validate_connection_policy(
+        gms_url, require_token=require_token, environment=child_env
+    )
     child_env.update(
         {
             "DATAHUB_GMS_URL": gms_url,
@@ -170,6 +205,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--server-command", default=default_server_command())
     parser.add_argument("--max-assets", type=int, default=100)
     parser.add_argument(
+        "--require-token",
+        action="store_true",
+        help="Require DATAHUB_TOKEN even when connecting to local DataHub.",
+    )
+    parser.add_argument(
         "--write-back",
         action="store_true",
         help="Create and read back a linked DataHub Decision document.",
@@ -196,6 +236,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 max_assets=args.max_assets,
                 write_back=args.write_back,
                 document_urn=args.document_urn,
+                require_token=args.require_token,
             )
         )
         write_outputs(result, args.output_dir)

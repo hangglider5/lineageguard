@@ -1,6 +1,7 @@
 # DataHub Agent Hackathon Plan
 
-Status on 2026-07-23: **first scenario and fixed evaluation v1 are complete.**
+Status on 2026-07-28: **first scenario, fixed evaluation v1, and offline CI are
+complete.**
 
 ## Objective
 
@@ -73,13 +74,16 @@ Implemented in fixed evaluation v1:
   unsafe SQL, and verdict override
 - [x] verified write-back receipt check
 - [x] offline policy latency reported separately from live MCP workflow latency
+- [x] shared local/GitHub Actions gate on Python 3.11 and 3.13
 
 ## Schedule
 
-- Jul 22–24: run DataHub locally, load sample graph, select concept
-- Jul 25–30: implement one end-to-end scenario
-- Jul 31–Aug 4: evaluation harness, error handling, graph write-back
-- Aug 5–7: UI/CLI polish, sample outputs, optional upstream feedback/contribution
+- Jul 22–24: run DataHub locally, load sample graph, select concept — complete
+- Jul 25–27: end-to-end scenario, fixed evaluation, graph write-back — complete
+- Jul 28: shared offline CI and remote connection safety baseline — complete
+- Jul 29–Aug 1: public demo backend and scoped-token authentication rehearsal
+- Aug 2–4: demo UI/CLI polish, failure states, fresh evaluation pass
+- Aug 5–7: sample outputs and optional upstream feedback/contribution
 - Aug 8: record rough demo and draft Devpost text
 - Aug 9: freeze code; fresh-machine setup rehearsal
 - Aug 10: submission buffer only
@@ -101,7 +105,9 @@ Jul 30:
 The gate was reached early on Jul 23. Fixed evaluation v1 now covers safe
 additions, type mismatches, missing fields, truncated lineage, ownership gaps,
 artifact tampering, and verified/idempotent write-back behavior. The next target
-is CI plus a public demo-safe backend/authentication path.
+is a public demo-safe backend/authentication path. As of Jul 28, remote endpoints
+are rejected unless they use HTTPS and `DATAHUB_TOKEN`; the remaining auth gate
+is a real scoped-token MCP read/write rehearsal against the deployment target.
 
 If either gate fails, reduce scope to a CLI and a single change type. Do not
 remove evaluation or write-back.

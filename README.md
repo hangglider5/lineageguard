@@ -25,6 +25,9 @@ The first end-to-end scenario passed on 2026-07-23:
 - The fixed evaluation suite passes 16/16 cases and 130/130 checks. A separate
   live DataHub gate passes with all 17 downstream assets and records real MCP
   workflow latency.
+- The GitHub Actions workflow is configured to run the shared offline CI gate on
+  Python 3.11 and 3.13. Remote DataHub connections fail closed unless they use
+  HTTPS and `DATAHUB_TOKEN`.
 
 The resulting artifacts are committed under
 [`examples/drop-orders-order-total/`](examples/drop-orders-order-total/).
@@ -137,12 +140,13 @@ offline result. The matching MCP-backed result is in
 ## Tests
 
 ```bash
-PYTHONPATH=src .venv/bin/python -m unittest discover -s tests -v
-PYTHONPATH=src .venv/bin/python -m compileall -q src tests
-PYTHONPATH=src .venv/bin/python -m lineageguard.evaluation \
-  evals/suite.json --output build/evaluation-report.json
-bash -n scripts/bootstrap_local.sh
+LINEAGEGUARD_PYTHON=.venv/bin/python ./scripts/ci.sh
 ```
+
+The same deterministic gate is configured for every GitHub push and pull
+request. It does not require Docker, network access, or DataHub credentials. See
+[`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for the separate live release gate and
+the HTTPS/token rules for a hosted demo.
 
 ## Design
 
