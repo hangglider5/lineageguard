@@ -1,7 +1,7 @@
 # DataHub Agent Hackathon Plan
 
-Status on 2026-07-28: **first scenario, fixed evaluation v1, and offline CI are
-complete.**
+Status on 2026-07-28: **first scenario, fixed evaluation v1, offline CI, the
+read-only demo API, and PAT-authenticated MCP compatibility are complete.**
 
 ## Objective
 
@@ -75,6 +75,8 @@ Implemented in fixed evaluation v1:
 - [x] verified write-back receipt check
 - [x] offline policy latency reported separately from live MCP workflow latency
 - [x] shared local/GitHub Actions gate on Python 3.11 and 3.13
+- [x] fixed-scenario public API with no write surface, timeout, body, and rate caps
+- [x] authenticated MCP read/write/read-back using a one-hour local PAT
 
 ## Schedule
 
@@ -105,9 +107,10 @@ Jul 30:
 The gate was reached early on Jul 23. Fixed evaluation v1 now covers safe
 additions, type mismatches, missing fields, truncated lineage, ownership gaps,
 artifact tampering, and verified/idempotent write-back behavior. The next target
-is a public demo-safe backend/authentication path. As of Jul 28, remote endpoints
-are rejected unless they use HTTPS and `DATAHUB_TOKEN`; the remaining auth gate
-is a real scoped-token MCP read/write rehearsal against the deployment target.
+is a hosted demo endpoint and least-privilege principal. As of Jul 28, the
+demo-safe backend and PAT transport gate are complete, and remote endpoints are
+rejected unless they use HTTPS and `DATAHUB_GMS_TOKEN`. The remaining auth gate is
+a scoped-principal MCP read/write rehearsal against the deployment target.
 
 If either gate fails, reduce scope to a CLI and a single change type. Do not
 remove evaluation or write-back.

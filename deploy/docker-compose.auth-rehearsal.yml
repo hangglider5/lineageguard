@@ -1,0 +1,4 @@
+services:
+  datahub-gms-quickstart:
+    environment:
+      METADATA_SERVICE_AUTH_ENABLED: "true"

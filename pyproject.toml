@@ -14,6 +14,8 @@ dependencies = [
   "fastmcp==3.4.4",
   "mcp==1.28.1",
   "mcp-server-datahub==0.6.0",
+  "starlette==1.3.1",
+  "uvicorn==0.51.0",
 ]
 
 [project.scripts]
@@ -21,6 +23,10 @@ lineageguard-probe-mcp = "lineageguard.mcp_probe:main"
 lineageguard-run = "lineageguard.workflow:main"
 lineageguard-eval = "lineageguard.evaluation:main"
 lineageguard-live-eval = "lineageguard.live_evaluation:main"
+lineageguard-demo-api = "lineageguard.demo_api:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+lineageguard = ["demo_scenario.json"]

@@ -27,12 +27,19 @@ The first end-to-end scenario passed on 2026-07-23:
   workflow latency.
 - The GitHub Actions workflow is configured to run the shared offline CI gate on
   Python 3.11 and 3.13. Remote DataHub connections fail closed unless they use
-  HTTPS and `DATAHUB_TOKEN`.
+  HTTPS and `DATAHUB_GMS_TOKEN`.
+- A fixed-scenario, read-only demo API runs the same MCP workflow with request
+  limits, timeouts, optional API-key protection, and no public write surface.
+- Metadata Service Authentication was enabled for a local rehearsal and a
+  one-hour PAT completed authenticated MCP read, write-back, and both read-back
+  checks. Least-privilege policy scoping remains a deployment gate.
 
 The resulting artifacts are committed under
 [`examples/drop-orders-order-total/`](examples/drop-orders-order-total/).
 Interface evidence is at [`examples/interface-probe.json`](examples/interface-probe.json),
-and the proposal review and known risks are in [`docs/REVIEW.md`](docs/REVIEW.md).
+authenticated evidence is at
+[`examples/authenticated-gate.json`](examples/authenticated-gate.json), and the
+proposal review and known risks are in [`docs/REVIEW.md`](docs/REVIEW.md).
 
 ## Local setup
 
@@ -147,6 +154,27 @@ The same deterministic gate is configured for every GitHub push and pull
 request. It does not require Docker, network access, or DataHub credentials. See
 [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for the separate live release gate and
 the HTTPS/token rules for a hosted demo.
+
+## Run the demo API
+
+Start the fixed-scenario API against local Quickstart:
+
+```bash
+PYTHONPATH=src .venv/bin/python -m lineageguard.demo_api
+```
+
+Then request the only public review scenario:
+
+```bash
+curl -fsS \
+  -H 'Content-Type: application/json' \
+  -d '{"scenario_id":"drop-orders-order-total"}' \
+  http://127.0.0.1:8000/api/review
+```
+
+The public API always runs `write_back=False`; callers cannot provide asset URNs,
+DataHub endpoints, commands, or filesystem paths. Container and hosted deployment
+instructions are in [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
 
 ## Design
 

@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "verified_at": "2026-07-28",
+  "datahub_core_version": "1.6.0",
+  "mcp_server_datahub_version": "0.6.0",
+  "authentication": {
+    "metadata_service_auth_enabled": true,
+    "unauthenticated_graphql_status": 401,
+    "credential_type": "PERSONAL_ACCESS_TOKEN",
+    "token_duration": "ONE_HOUR",
+    "environment_variable": "DATAHUB_GMS_TOKEN",
+    "token_recorded": false,
+    "scoped_permissions_verified": false
+  },
+  "workflow": {
+    "scenario_id": "drop-orders-order-total",
+    "verdict": "block",
+    "downstream_total": 17,
+    "artifact_valid": true,
+    "write_back_success": true,
+    "document_read_back_verified": true,
+    "source_relationship_verified": true
+  },
+  "public_api": {
+    "authenticated_datahub_request_passed": true,
+    "write_surface_exposed": false,
+    "verdict": "block",
+    "downstream_total": 17,
+    "validation_error_count": 0
+  }
+}

@@ -62,12 +62,12 @@ def validate_connection_policy(
         pass
 
     token = (environment if environment is not None else os.environ).get(
-        "DATAHUB_TOKEN", ""
+        "DATAHUB_GMS_TOKEN", ""
     )
     if not is_loopback and parsed.scheme != "https":
         raise ValueError("remote DataHub connections require HTTPS")
     if (require_token or not is_loopback) and not token.strip():
-        raise ValueError("this DataHub connection requires DATAHUB_TOKEN")
+        raise ValueError("this DataHub connection requires DATAHUB_GMS_TOKEN")
 
 
 async def _write_back(
@@ -207,7 +207,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--require-token",
         action="store_true",
-        help="Require DATAHUB_TOKEN even when connecting to local DataHub.",
+        help="Require DATAHUB_GMS_TOKEN even when connecting to local DataHub.",
     )
     parser.add_argument(
         "--write-back",

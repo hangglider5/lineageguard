@@ -1,0 +1,13 @@
+{
+  "scenario_id": "drop-orders-order-total",
+  "target": {
+    "query": "/q orders",
+    "platform": "dbt",
+    "name": "orders",
+    "env": "PROD",
+    "relation": "order_entry_db.order_entry.orders"
+  },
+  "kind": "drop_column",
+  "field_path": "order_total",
+  "before_type": "FLOAT"
+}
