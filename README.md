@@ -8,6 +8,9 @@ This repository is an entry for the
 [DataHub Agent Hackathon](https://datahub.devpost.com/). The submission deadline
 is **2026-08-11 05:00 China Standard Time** (2026-08-10 17:00 EDT).
 
+[Inspect the verified public evidence demo](https://hangglider5.github.io/lineageguard/)
+or follow the live local MCP workflow below.
+
 ## Current status
 
 The first end-to-end scenario passed on 2026-07-23:

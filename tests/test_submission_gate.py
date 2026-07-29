@@ -21,7 +21,6 @@ class SubmissionGateTests(unittest.TestCase):
         self.assertEqual(
             report.external_blockers,
             (
-                "project_url is not configured with an HTTPS URL",
                 "video_url is not configured with an HTTPS URL",
             ),
         )

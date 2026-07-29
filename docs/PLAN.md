@@ -119,11 +119,10 @@ are complete, and remote endpoints are rejected unless they use HTTPS and
 `DATAHUB_GMS_TOKEN`. The remaining auth gate is a scoped-principal MCP read/write
 rehearsal against the deployment target.
 
-The first English Devpost draft and a 362-word demo narration are also complete.
-The public repository is configured and the evidence-backed Pages build passes
-desktop and mobile browser QA. The submission gate passes all local materials
-and intentionally reports the hosted project and video URLs as external blockers
-until deployment completes.
+The first English Devpost draft and a 364-word demo narration are also complete.
+The public repository and evidence-backed Pages demo are configured. The deployed
+site passes desktop and mobile browser QA. The submission gate passes all local
+materials and now reports only the video URL as an external blocker.
 
 If either gate fails, reduce scope to a CLI and a single change type. Do not
 remove evaluation or write-back.

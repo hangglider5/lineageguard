@@ -2,6 +2,8 @@
 
 **Tagline:** A DataHub-native agent that turns risky schema changes into validated, auditable migration decisions.
 
+**Try it:** [Verified public evidence demo](https://hangglider5.github.io/lineageguard/)
+
 ## Problem
 
 A column rename or deletion can silently break dashboards, warehouse models, and ML features several hops away. Engineers often review these changes with incomplete context: a schema diff in one tab, lineage in another, and owner information scattered across tools. DataHub already knows how the stack is connected, but an impact graph alone does not produce a safe migration plan or preserve the decision for the next reviewer.
@@ -21,7 +23,7 @@ The primary demo asks whether a team can drop `orders.order_total`. LineageGuard
 5. A separate validator rejects unsupported assets, owner or domain misrouting, unsafe SQL, incomplete lineage, and verdict tampering.
 6. An explicit mutation path saves the validated Decision as a DataHub Document and reads back both the Document and its relationship to the source asset.
 
-The live demo API is intentionally read-only. The permanent GitHub Pages URL transparently replays a committed, validated evidence snapshot without secrets; the local live run and authenticated write-back receipt prove the DataHub interaction. Graph mutation remains a separately authorized, auditable operation.
+The live demo API is intentionally read-only. The [permanent GitHub Pages demo](https://hangglider5.github.io/lineageguard/) transparently replays a committed, validated evidence snapshot without secrets; the local live run and authenticated write-back receipt prove the DataHub interaction. Graph mutation remains a separately authorized, auditable operation.
 
 ## How we use DataHub
 
