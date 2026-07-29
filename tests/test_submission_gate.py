@@ -18,7 +18,13 @@ class SubmissionGateTests(unittest.TestCase):
         self.assertFalse(report.submission_ready)
         self.assertGreaterEqual(report.narration_words, 250)
         self.assertLessEqual(report.narration_words, 420)
-        self.assertEqual(len(report.external_blockers), 3)
+        self.assertEqual(
+            report.external_blockers,
+            (
+                "project_url is not configured with an HTTPS URL",
+                "video_url is not configured with an HTTPS URL",
+            ),
+        )
 
     def test_complete_https_urls_clear_external_blockers(self) -> None:
         manifest = json.loads(MANIFEST_PATH.read_text("utf-8"))
