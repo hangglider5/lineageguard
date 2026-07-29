@@ -68,9 +68,14 @@ jobs:
             lineageguard-demo:ci)"
           trap 'docker stop "$container_id"' EXIT
           test "$(docker inspect --format '{{.Config.User}}' "$container_id")" = "10001:10001"
-          curl --fail --silent --show-error \
-            --retry 20 --retry-delay 1 --retry-connrefused \
-            http://127.0.0.1:8000/health
+          if ! curl --fail --silent --show-error \
+            --connect-timeout 2 --max-time 5 \
+            --retry 20 --retry-delay 1 --retry-max-time 30 \
+            --retry-all-errors \
+            http://127.0.0.1:8000/health; then
+            docker logs "$container_id"
+            exit 1
+          fi
           curl --fail --silent --show-error http://127.0.0.1:8000/ \
             | python3 -c 'import sys; assert "LineageGuard" in sys.stdin.read()'
           curl --fail --silent --show-error http://127.0.0.1:8000/assets/demo.css \
