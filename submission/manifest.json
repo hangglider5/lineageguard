@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "project_name": "LineageGuard",
+  "primary_category": "Agents That Do Real Work",
+  "repository_url": null,
+  "project_url": null,
+  "video_url": null,
+  "availability_until": "2026-09-01T05:00:00+08:00",
+  "materials": {
+    "description": "submission/devpost.md",
+    "demo_script": "submission/demo-script.md",
+    "license": "LICENSE",
+    "readme": "README.md",
+    "sample_outputs": [
+      "examples/drop-orders-order-total/decision.json",
+      "examples/drop-orders-order-total/migration-checklist.md",
+      "examples/drop-orders-order-total/write-back.json",
+      "examples/evaluation-report.json",
+      "examples/live-evaluation.json",
+      "examples/authenticated-gate.json"
+    ]
+  },
+  "disclosures": {
+    "pre_existing_work": "No LineageGuard project code predates the hackathon submission period. The project builds on the Apache-2.0 DataHub platform and the third-party libraries pinned in pyproject.toml.",
+    "ai_assistance": "OpenAI Codex was used for implementation assistance, code review, testing, documentation, and visual concept exploration. The entrant directed the product design and remains responsible for the submitted work."
+  }
+}

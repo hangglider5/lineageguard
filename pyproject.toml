@@ -24,6 +24,7 @@ lineageguard-run = "lineageguard.workflow:main"
 lineageguard-eval = "lineageguard.evaluation:main"
 lineageguard-live-eval = "lineageguard.live_evaluation:main"
 lineageguard-demo-api = "lineageguard.demo_api:main"
+lineageguard-submission-gate = "lineageguard.submission_gate:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

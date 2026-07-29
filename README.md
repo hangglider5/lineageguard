@@ -183,6 +183,26 @@ The public API always runs `write_back=False`; callers cannot provide asset URNs
 DataHub endpoints, commands, or filesystem paths. Container and hosted deployment
 instructions are in [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
 
+## Prepare the submission
+
+The English Devpost draft, disclosure text, machine-readable readiness manifest,
+and 2:55 demo script are committed under [`submission/`](submission/). Validate
+all local materials without requiring unpublished URLs:
+
+```bash
+PYTHONPATH=src .venv/bin/python -m lineageguard.submission_gate \
+  submission/manifest.json
+```
+
+Immediately before submitting, add the public repository, project, and video
+URLs to `submission/manifest.json` and run the strict gate:
+
+```bash
+PYTHONPATH=src .venv/bin/python -m lineageguard.submission_gate \
+  submission/manifest.json \
+  --strict
+```
+
 ## Design
 
 The implemented first vertical slice is deliberately narrow:

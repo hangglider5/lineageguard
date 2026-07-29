@@ -1,8 +1,8 @@
 # DataHub Agent Hackathon Plan
 
-Status on 2026-07-28: **first scenario, fixed evaluation v1, offline and
-container CI, the responsive read-only demo, and PAT-authenticated MCP
-compatibility are complete.**
+Status on 2026-07-29: **first scenario, fixed evaluation v1, offline and
+container CI, the responsive read-only demo, PAT-authenticated MCP compatibility,
+and the first submission kit draft are complete.**
 
 ## Objective
 
@@ -80,6 +80,8 @@ Implemented in fixed evaluation v1:
 - [x] authenticated MCP read/write/read-back using a one-hour local PAT
 - [x] responsive one-screen demo with explicit loading and failure states
 - [x] non-root container smoke gate and hardened single-host Compose definition
+- [x] English Devpost draft, disclosure, and 2:55 demo script
+- [x] local/strict submission readiness gate
 
 ## Schedule
 
@@ -115,6 +117,11 @@ demo-safe backend, responsive UI, container smoke gate, and PAT transport gate
 are complete, and remote endpoints are rejected unless they use HTTPS and
 `DATAHUB_GMS_TOKEN`. The remaining auth gate is a scoped-principal MCP read/write
 rehearsal against the deployment target.
+
+The first English Devpost draft and a 362-word demo narration are also complete.
+The submission gate passes all local materials and intentionally reports three
+external blockers until the public repository, hosted project, and video URLs
+are configured.
 
 If either gate fails, reduce scope to a CLI and a single change type. Do not
 remove evaluation or write-back.

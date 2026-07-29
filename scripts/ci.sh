@@ -18,6 +18,7 @@ export PYTHONPATH="${repository_dir}/src${PYTHONPATH:+:${PYTHONPATH}}"
   evals/suite.json \
   --output build/evaluation-report.json \
   --markdown-output build/evaluation-report.md
+"$python_command" -m lineageguard.submission_gate submission/manifest.json
 bash -n scripts/bootstrap_local.sh scripts/ci.sh
 
 echo "LineageGuard offline CI passed."

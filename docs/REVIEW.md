@@ -1,8 +1,8 @@
 # LineageGuard proposal review
 
 Reviewed on 2026-07-22 against the official rules, current DataHub `1.6.0`
-documentation, and a live local Quickstart. Updated on 2026-07-23 after the first
-end-to-end scenario.
+documentation, and a live local Quickstart. Updated through 2026-07-29 after the
+end-to-end scenario, authentication rehearsal, demo UI, and submission draft.
 
 ## Verdict
 
@@ -94,17 +94,19 @@ must package and pin the MCP sidecar; a demo cannot assume Quickstart exposes it
 Mitigation: pin `mcp-server-datahub==0.6.0`, test the actual stdio protocol, and
 add an HTTP wrapper only if the hosted demo requires it.
 
-### P0 — Authentication path is not yet production-safe
+### P0 — Authentication transport works, but authorization is not yet scoped
 
-On a fresh Quickstart, `datahub init --username datahub --password datahub`
-successfully logged into the frontend but `createAccessToken` returned 403. CLI
-`1.6.0` then masked the GraphQL error with a `NoneType.get` exception. Local GMS
-read/write works without a token because Quickstart is development-only.
+The first fresh-Quickstart attempt showed that frontend credentials alone were
+not enough while Metadata Service Authentication was disabled. A later rehearsal
+enabled it, confirmed an unauthenticated GraphQL request returned `401`, issued a
+one-hour PAT, and completed MCP read, write-back, Document read-back, and source
+relationship read-back through the SDK's actual `DATAHUB_GMS_TOKEN` variable.
 
-Mitigation: keep the current no-token path local only. Before any public demo,
-provision a scoped service account/PAT, verify read and mutation policies, and
-remove default credentials. File the reproducible CLI error as hackathon feedback
-or an upstream issue.
+That PAT belonged to the local administrator, so it does not prove least-privilege
+authorization. Before any public demo, provision a dedicated principal limited to
+graph reads plus Document write-back, verify its policies, and remove default
+credentials. Keep the reproducible CLI error as hackathon feedback or an upstream
+issue.
 
 ### P0 — A public working project must survive through judging
 
