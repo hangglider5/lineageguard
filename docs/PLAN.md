@@ -1,8 +1,8 @@
 # DataHub Agent Hackathon Plan
 
-Status on 2026-07-29: **first scenario, fixed evaluation v1, offline and
-container CI, the responsive read-only demo, PAT-authenticated MCP compatibility,
-and the first submission kit draft are complete.**
+Status on 2026-07-29: **first scenario, fixed evaluation v1, green offline and
+container CI, the responsive live demo API, PAT-authenticated MCP compatibility,
+the evidence-backed Pages build, and the first submission kit draft are complete.**
 
 ## Objective
 
@@ -82,6 +82,7 @@ Implemented in fixed evaluation v1:
 - [x] non-root container smoke gate and hardened single-host Compose definition
 - [x] English Devpost draft, disclosure, and 2:55 demo script
 - [x] local/strict submission readiness gate
+- [x] zero-secret GitHub Pages build derived from verified evidence
 
 ## Schedule
 
@@ -119,9 +120,10 @@ are complete, and remote endpoints are rejected unless they use HTTPS and
 rehearsal against the deployment target.
 
 The first English Devpost draft and a 362-word demo narration are also complete.
-The public repository is now configured. The submission gate passes all local
-materials and intentionally reports two external blockers until the hosted
-project and video URLs are configured.
+The public repository is configured and the evidence-backed Pages build passes
+desktop and mobile browser QA. The submission gate passes all local materials
+and intentionally reports the hosted project and video URLs as external blockers
+until deployment completes.
 
 If either gate fails, reduce scope to a CLI and a single change type. Do not
 remove evaluation or write-back.

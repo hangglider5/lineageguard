@@ -18,6 +18,20 @@ does not start the roughly 13 GB DataHub Quickstart stack. This keeps pull-reque
 results deterministic and makes contributions from forks safe to test without
 repository secrets.
 
+## GitHub Pages evidence snapshot
+
+`.github/workflows/pages.yml` builds and deploys the permanent judge-facing
+static surface. The build reads only committed evidence and requires agreement
+between the Decision artifact, live MCP evaluation, fixed evaluation, authenticated
+write-back, Document read-back, and source-relationship read-back. The rendered
+page says **Verified evidence snapshot** and never claims that a button click is a
+new DataHub request.
+
+This surface intentionally has no secret, DataHub endpoint, mutation path, or
+server-side API. It provides a durable test URL while the containerized API below
+remains the executable live-MCP deployment path. The video must distinguish the
+Pages evidence replay from the live local DataHub run.
+
 Before a release or demo, run the separate MCP-backed gate against the pinned
 local DataHub graph:
 

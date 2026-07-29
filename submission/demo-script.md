@@ -34,9 +34,9 @@ Target length: 2 minutes 55 seconds. Spoken narration is represented by blockquo
 
 ## 02:25–02:45 — Show evaluation evidence
 
-**Shot:** Show the fixed evaluation summary and the CI workflow result: 16 of 16 cases, 130 of 130 checks, and 53 tests.
+**Shot:** Show the fixed evaluation summary and the CI workflow result: 16 of 16 cases, 130 of 130 checks, and more than 50 tests.
 
-> Reliability is part of the product. Sixteen fixed scenarios cover safe additions, breaking changes, missing or contradictory metadata, truncated lineage, ownership gaps, artifact attacks, and idempotent write-back. All one hundred thirty checks pass, alongside fifty-three automated tests and a separate live MCP gate.
+> Reliability is part of the product. Sixteen fixed scenarios cover safe additions, breaking changes, missing or contradictory metadata, truncated lineage, ownership gaps, artifact attacks, and idempotent write-back. All one hundred thirty checks pass, alongside more than fifty automated tests and a separate live MCP gate.
 
 ## 02:45–02:55 — Close
 

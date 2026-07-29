@@ -183,6 +183,26 @@ The public API always runs `write_back=False`; callers cannot provide asset URNs
 DataHub endpoints, commands, or filesystem paths. Container and hosted deployment
 instructions are in [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
 
+## Public evidence snapshot
+
+The GitHub Pages workflow publishes a zero-secret, static version of the same
+interface for judges. It is explicitly labeled **Verified evidence snapshot**:
+the button loads a committed result rather than claiming to query DataHub live.
+`scripts/build_pages.py` cross-checks the Decision against the live MCP evaluation,
+fixed evaluation, authenticated write-back, Document read-back, and relationship
+read-back evidence before it emits the site. Any contradiction fails the build.
+
+The snapshot complements rather than replaces the live proof. The container API
+still runs the read-only MCP workflow, and the demo video shows the explicit
+authenticated write-back/read-back path. Build the static site into a fresh
+directory with:
+
+```bash
+pages_root="$(mktemp -d)"
+.venv/bin/python scripts/build_pages.py --output "$pages_root/site"
+python3 -m http.server 4173 --directory "$pages_root/site"
+```
+
 ## Prepare the submission
 
 The English Devpost draft, disclosure text, machine-readable readiness manifest,

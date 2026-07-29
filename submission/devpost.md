@@ -21,7 +21,7 @@ The primary demo asks whether a team can drop `orders.order_total`. LineageGuard
 5. A separate validator rejects unsupported assets, owner or domain misrouting, unsafe SQL, incomplete lineage, and verdict tampering.
 6. An explicit mutation path saves the validated Decision as a DataHub Document and reads back both the Document and its relationship to the source asset.
 
-The public demo surface is intentionally read-only. Graph mutation remains a separately authorized, auditable operation.
+The live demo API is intentionally read-only. The permanent GitHub Pages URL transparently replays a committed, validated evidence snapshot without secrets; the local live run and authenticated write-back receipt prove the DataHub interaction. Graph mutation remains a separately authorized, auditable operation.
 
 ## How we use DataHub
 
@@ -29,7 +29,7 @@ DataHub is the system of context and the system of record for the result. Lineag
 
 ## Validation
 
-The fixed evaluation suite contains 16 versioned cases and 130 exact checks covering safe additions, breaking changes, type mismatches, missing fields, truncated lineage, ownership gaps, domain routing, artifact tampering, unsafe SQL, and verified idempotent write-back. All cases pass. The repository also has 53 automated tests, a separate live MCP-backed gate that rechecks all 17 downstream assets, and a PAT-authenticated read/write/read-back receipt.
+The fixed evaluation suite contains 16 versioned cases and 130 exact checks covering safe additions, breaking changes, type mismatches, missing fields, truncated lineage, ownership gaps, domain routing, artifact tampering, unsafe SQL, and verified idempotent write-back. All cases pass. The repository also has more than 50 automated tests, a separate live MCP-backed gate that rechecks all 17 downstream assets, and a PAT-authenticated read/write/read-back receipt.
 
 ## What makes it different
 

@@ -65,7 +65,8 @@ class DemoApiTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(page.status_code, 200)
         self.assertIn("Drop orders.order_total?", page.text)
-        self.assertIn('src="/assets/demo.js"', page.text)
+        self.assertIn('src="assets/demo.js"', page.text)
+        self.assertIn('data-demo-mode="live"', page.text)
         self.assertNotIn("<script>", page.text)
         self.assertEqual(stylesheet.status_code, 200)
         self.assertIn("--blue: #075ee6", stylesheet.text)

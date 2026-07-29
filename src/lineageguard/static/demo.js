@@ -2,6 +2,8 @@
 
 const SCENARIO_ID = "drop-orders-order-total";
 const state = { accessKey: "" };
+const snapshotMode = document.body.dataset.demoMode === "snapshot";
+const idleButtonLabel = snapshotMode ? "Inspect verified evidence" : "Run impact review";
 
 const elements = {
   run: document.querySelector("#run-review"),
@@ -92,8 +94,8 @@ function renderResult(payload) {
   elements.owners.textContent = notify ? `${notify.owner_urns.length} accountable owners` : "Owner routing required";
   elements.migration.textContent = migrate ? `${migrate.asset_urns.length} impacted assets` : "Compatibility work required";
   elements.query.textContent = validate ? `${artifact.validation_queries.length} read-only query` : "Validation required";
-  elements.latency.textContent = `${Number(payload.latency_ms).toFixed(0)} ms · ${payload.request_id.slice(0, 8)}`;
-  elements.freshness.textContent = "Live result";
+  elements.latency.textContent = payload.result_meta || `${Number(payload.latency_ms).toFixed(0)} ms · ${payload.request_id.slice(0, 8)}`;
+  elements.freshness.textContent = payload.result_freshness || "Live result";
   showState("result");
 }
 
@@ -107,31 +109,35 @@ function errorCopy(status, code) {
 }
 
 function renderError(status, body = {}) {
-  const [title, message] = errorCopy(status, body.error);
+  const [title, message] = snapshotMode
+    ? ["Evidence unavailable", "The committed verification snapshot could not be loaded. Try again shortly."]
+    : errorCopy(status, body.error);
   elements.errorTitle.textContent = title;
   elements.errorMessage.textContent = message;
-  elements.keyForm.hidden = status !== 401;
-  elements.retry.hidden = status === 401;
+  elements.keyForm.hidden = snapshotMode || status !== 401;
+  elements.retry.hidden = !snapshotMode && status === 401;
   elements.freshness.textContent = "No decision returned";
   showState("error");
-  if (status === 401) elements.keyInput.focus();
+  if (!snapshotMode && status === 401) elements.keyInput.focus();
 }
 
 async function runReview() {
   showState("loading");
   elements.run.disabled = true;
   elements.run.setAttribute("aria-busy", "true");
-  elements.runLabel.textContent = "Tracing DataHub lineage…";
+  elements.runLabel.textContent = snapshotMode ? "Loading verified evidence…" : "Tracing DataHub lineage…";
   elements.freshness.textContent = "Review in progress";
   const headers = { "Content-Type": "application/json" };
   if (state.accessKey) headers.Authorization = `Bearer ${state.accessKey}`;
 
   try {
-    const response = await fetch("/api/review", {
-      method: "POST",
-      headers,
-      body: JSON.stringify({ scenario_id: SCENARIO_ID }),
-    });
+    const response = snapshotMode
+      ? await fetch("snapshot.json", { cache: "no-store", headers: { Accept: "application/json" } })
+      : await fetch("/api/review", {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ scenario_id: SCENARIO_ID }),
+        });
     let body = {};
     try { body = await response.json(); } catch (_) { body = {}; }
     if (!response.ok) {
@@ -144,7 +150,7 @@ async function runReview() {
   } finally {
     elements.run.disabled = false;
     elements.run.removeAttribute("aria-busy");
-    elements.runLabel.textContent = "Run impact review";
+    elements.runLabel.textContent = idleButtonLabel;
   }
 }
 
