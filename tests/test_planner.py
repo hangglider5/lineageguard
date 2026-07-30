@@ -72,6 +72,16 @@ class PlannerContractTests(unittest.TestCase):
         self.assertNotIn("summary", payload)
         self.assertNotIn("description", payload["assets"][0])
         self.assertNotIn("name", payload["assets"][0])
+        self.assertTrue(
+            all(len(asset["allowed_action_kinds"]) == 1 for asset in payload["assets"])
+        )
+        powerbi_asset = next(
+            asset for asset in payload["assets"] if asset["platform"] == "powerbi"
+        )
+        self.assertEqual(
+            powerbi_asset["allowed_action_kinds"],
+            ["update_semantic_model"],
+        )
         serialized = planner_context_json(self.context)
         self.assertEqual(serialized, planner_context_json(self.context))
         self.assertEqual(len(sha256_text(serialized)), 64)
@@ -119,6 +129,21 @@ class PlannerContractTests(unittest.TestCase):
         errors = validate_migration_proposal(proposal, self.context)
 
         self.assertTrue(any("incompatible with platform looker" in error for error in errors))
+
+    def test_powerbi_dataset_cannot_be_misclassified_as_dashboard(self) -> None:
+        proposal = make_valid_proposal(self.context)
+        powerbi_step = next(
+            step
+            for step in proposal.ordered_steps
+            if "dataPlatform:powerbi" in step.asset_urn
+        )
+        powerbi_step.action_kind = "update_dashboard"
+
+        errors = validate_migration_proposal(proposal, self.context)
+
+        self.assertTrue(
+            any("incompatible with platform powerbi" in error for error in errors)
+        )
 
     def test_forward_or_unknown_dependency_is_rejected(self) -> None:
         proposal = make_valid_proposal(self.context)
@@ -171,6 +196,7 @@ class PlannerContractTests(unittest.TestCase):
 
         self.assertFalse(schema["additionalProperties"])
         self.assertIn("ordered_steps", schema["required"])
+        self.assertEqual(schema["properties"]["open_questions"]["maxItems"], 3)
         json.dumps(schema)
 
 

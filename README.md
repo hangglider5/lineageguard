@@ -167,7 +167,9 @@ validation status without storing the API key, raw prompt, or hidden reasoning.
 If the model is unavailable or ungrounded, normal `--planner model` falls back to
 the deterministic checklist; `--require-planner` instead fails the live gate.
 
-The model receives at most 25 compacted assets and never sees raw lineage
+Each asset includes one deterministically derived allowed action, preventing the
+model from relabeling a semantic dataset as a dashboard or a warehouse model as a
+BI artifact. The model receives at most 25 compacted assets and never sees raw lineage
 responses, DataHub Document text, arbitrary endpoints, or secrets. The MCP child
 process receives a minimal environment allowlist, so LLM credentials are not
 inherited. The public demo API keeps the planner disabled to prevent cost abuse.

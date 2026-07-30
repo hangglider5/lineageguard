@@ -109,6 +109,7 @@ class PlannerRuntimeTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(outcome.proposal, proposal)
         self.assertEqual(outcome.receipt.attempts, 1)
         self.assertEqual(outcome.receipt.input_tokens, 10)
+        self.assertGreater(outcome.receipt.response_chars, 0)
         self.assertEqual(len(outcome.receipt.response_sha256 or ""), 64)
         receipt_json = outcome.receipt.model_dump_json()
         self.assertNotIn("never-log-this-key", receipt_json)

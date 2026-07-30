@@ -147,6 +147,12 @@ results. Descriptions and Document text remain outside model context. Model outp
 is advisory, strictly typed, independently grounded, and omitted from write-back
 when validation fails.
 
+Action selection is constrained as well as asset selection. LineageGuard derives
+one allowed action from the entity type and platform for each asset, includes that
+value as data in the compact context, and rejects any different action. This keeps
+the model focused on sequencing, dependencies, rationale, success criteria, and
+questions rather than reclassifying graph entities.
+
 ### P1 — `max_hops=3` means the `3+` bucket
 
 The MCP implementation treats three or more hops as `1`, `2`, and `3+`; it is not
