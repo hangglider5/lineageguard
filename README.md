@@ -42,8 +42,9 @@ The first end-to-end scenario passed on 2026-07-23:
 - A bounded, provider-selectable AI planner now turns the validated Decision into
   an ordered, platform-aware migration plan. It cannot change the verdict, cite
   new assets or owners, emit executable code, or write to DataHub. DeepSeek and
-  OpenRouter use the same strict contract; the real-provider rehearsal remains
-  opt-in and is never part of offline CI.
+  OpenRouter use the same strict contract. The frozen DeepSeek contract passed
+  three of three live rehearsals on the first attempt with 17/17 grounded assets;
+  real-provider calls remain opt-in and never run in offline CI.
 
 The resulting artifacts are committed under
 [`examples/drop-orders-order-total/`](examples/drop-orders-order-total/).
@@ -249,6 +250,13 @@ the button loads a committed result rather than claiming to query DataHub live.
 `scripts/build_pages.py` cross-checks the Decision against the live MCP evaluation,
 fixed evaluation, authenticated write-back, Document read-back, and relationship
 read-back evidence before it emits the site. Any contradiction fails the build.
+
+The snapshot also embeds the committed representative
+[`migration-plan.json`](examples/drop-orders-order-total/migration-plan.json),
+its redacted [`planner-receipt.json`](examples/drop-orders-order-total/planner-receipt.json),
+and the three-run
+[`planner-rehearsal.json`](examples/drop-orders-order-total/planner-rehearsal.json).
+The Pages build rejects mismatched assets, actions, hashes, attempts, or statuses.
 
 The snapshot complements rather than replaces the live proof. The container API
 still runs the read-only MCP workflow, and the demo video shows the explicit

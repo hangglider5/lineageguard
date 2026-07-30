@@ -29,6 +29,82 @@ def _replace_once(source: str, old: str, new: str) -> str:
     return source.replace(old, new)
 
 
+def _validated_planner_evidence(
+    repository_root: Path,
+    artifact: dict[str, Any],
+) -> dict[str, Any]:
+    proposal = _load_json(
+        repository_root / "examples/drop-orders-order-total/migration-plan.json"
+    )
+    report = _load_json(
+        repository_root / "examples/drop-orders-order-total/planner-rehearsal.json"
+    )
+    receipt = _load_json(
+        repository_root / "examples/drop-orders-order-total/planner-receipt.json"
+    )
+    steps = proposal.get("ordered_steps")
+    receipts = report.get("receipts")
+    impacted_assets = artifact.get("impacted_assets")
+    if not isinstance(steps, list) or not isinstance(receipts, list):
+        raise ValueError("planner evidence omitted steps or receipts")
+    if not isinstance(impacted_assets, list):
+        raise ValueError("artifact omitted impacted assets")
+
+    asset_by_urn = {asset.get("urn"): asset for asset in impacted_assets}
+    step_urns = [step.get("asset_urn") for step in steps]
+    expected_actions: dict[str, str] = {}
+    transformation_platforms = {
+        "bigquery", "dbt", "hive", "postgres", "postgresql", "redshift",
+        "snowflake", "spark",
+    }
+    semantic_platforms = {"looker", "powerbi", "tableau"}
+    for urn, asset in asset_by_urn.items():
+        platform = str(asset.get("platform") or "").casefold()
+        entity_type = str(asset.get("entity_type") or "").casefold()
+        if entity_type in {"dashboard", "chart"}:
+            action = "update_dashboard"
+        elif platform in transformation_platforms:
+            action = "update_transformation"
+        elif platform in semantic_platforms:
+            action = "update_semantic_model"
+        else:
+            action = "verify_consumer"
+        expected_actions[str(urn)] = action
+
+    prompt_hashes = {item.get("prompt_sha256") for item in receipts}
+    context_hashes = {item.get("context_sha256") for item in receipts}
+    required = {
+        "planner scenario": proposal.get("scenario_id") == artifact.get("scenario_id"),
+        "planner decision": proposal.get("decision_id") == artifact.get("decision_id"),
+        "planner coverage": set(step_urns) == set(asset_by_urn),
+        "planner unique coverage": len(step_urns) == len(set(step_urns)) == 17,
+        "planner sequences": [step.get("sequence") for step in steps]
+        == list(range(1, 18)),
+        "planner actions": all(
+            step.get("action_kind") == expected_actions.get(str(step.get("asset_urn")))
+            for step in steps
+        ),
+        "planner run count": report.get("total_runs") == 3,
+        "planner accepted count": report.get("accepted_runs") == 3,
+        "planner all accepted": report.get("all_accepted") is True,
+        "planner receipt count": len(receipts) == 3,
+        "planner receipt status": all(item.get("status") == "accepted" for item in receipts),
+        "planner single attempts": all(item.get("attempts") == 1 for item in receipts),
+        "planner validation": all(not item.get("validation_errors") for item in receipts),
+        "planner context stable": len(context_hashes) == 1,
+        "planner prompt stable": len(prompt_hashes) == 1,
+        "representative receipt": receipt == receipts[-1],
+    }
+    failed = [name for name, passed in required.items() if not passed]
+    if failed:
+        raise ValueError("inconsistent committed planner evidence: " + ", ".join(failed))
+    return {
+        "proposal": proposal,
+        "receipt": receipt,
+        "rehearsal": report,
+    }
+
+
 def _validated_snapshot(repository_root: Path) -> dict[str, Any]:
     artifact = _load_json(
         repository_root / "examples/drop-orders-order-total/decision.json"
@@ -36,6 +112,7 @@ def _validated_snapshot(repository_root: Path) -> dict[str, Any]:
     live = _load_json(repository_root / "examples/live-evaluation.json")
     fixed = _load_json(repository_root / "examples/evaluation-report.json")
     authenticated = _load_json(repository_root / "examples/authenticated-gate.json")
+    planner = _validated_planner_evidence(repository_root, artifact)
 
     evidence = artifact.get("evidence", {})
     actual = live.get("actual", {})
@@ -70,9 +147,10 @@ def _validated_snapshot(repository_root: Path) -> dict[str, Any]:
         "severity": artifact["severity"],
         "latency_ms": latency,
         "request_id": "verified-evidence-20260728",
-        "result_freshness": "Verified evidence · Jul 28, 2026",
+        "result_freshness": "Graph Jul 28 · AI planner Jul 30, 2026",
         "result_meta": f"{latency:,.0f} ms live MCP gate",
         "artifact": artifact,
+        "planner": planner,
         "verification": {
             "datahub_core_version": authenticated.get("datahub_core_version"),
             "mcp_server_datahub_version": authenticated.get(
@@ -84,6 +162,10 @@ def _validated_snapshot(repository_root: Path) -> dict[str, Any]:
             "authenticated_write_back_verified": True,
             "document_read_back_verified": True,
             "source_relationship_verified": True,
+            "planner_runs": planner["rehearsal"]["total_runs"],
+            "planner_accepted_runs": planner["rehearsal"]["accepted_runs"],
+            "planner_model": planner["rehearsal"]["model"],
+            "planner_evaluated_at": planner["rehearsal"]["evaluated_at"],
         },
     }
 

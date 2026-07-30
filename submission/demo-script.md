@@ -20,13 +20,13 @@ Target length: 2 minutes 55 seconds. Spoken narration is represented by blockquo
 
 > The result is block, high severity. DataHub reports seventeen attributable downstream column consumers: one direct and sixteen transitive. The graph is complete, so this is not a guess based on a truncated window. LineageGuard routes the decision to twelve discovered owners, identifies ownership gaps, stages migration work for every impacted asset, and generates a read-only source validation query. Every asset shown here comes from the retrieved graph.
 
-## 01:25–01:55 — Show the artifacts
+## 01:25–02:00 — Show the artifacts and bounded planner
 
-**Shot:** Open `decision.json`, `migration-checklist.md`, and the validation SQL portion of the checklist side by side.
+**Shot:** Open `decision.json`, `migration-plan.json`, `planner-receipt.json`, and the combined checklist side by side.
 
-> The agent produces more than prose. The JSON Decision records evidence, reason codes, owner and domain routes, required actions, and validation queries. The Markdown checklist is ready for a change review. Before either artifact is accepted, a separate validator rejects unsupported assets, incorrect routing, unsafe SQL, incomplete lineage, or a verdict that does not match the evidence.
+> The deterministic Decision records evidence, routes, required actions, and validation queries. Only after it passes validation does a bounded DeepSeek planner receive the compact graph facts. It proposes sequencing, execution prerequisites, rationale, and success criteria, but it cannot change the verdict, assets, owners, columns, or write targets. A second validator rejects incompatible actions, backward lineage order, executable text, and unsupported structured claims. The frozen contract passed three live runs with all seventeen assets grounded and no retries.
 
-## 01:55–02:25 — Prove write-back
+## 02:00–02:25 — Prove write-back
 
 **Shot:** Run the explicit CLI write-back command, then show the receipt and the related Decision Document in DataHub.
 
@@ -34,9 +34,9 @@ Target length: 2 minutes 55 seconds. Spoken narration is represented by blockquo
 
 ## 02:25–02:45 — Show evaluation evidence
 
-**Shot:** Show the fixed evaluation summary and the CI workflow result: 16 of 16 cases, 130 of 130 checks, and more than 50 tests.
+**Shot:** Show the fixed evaluation summary, the three-run planner receipt, and CI: 16 of 16 cases, 130 of 130 checks, and more than 90 tests.
 
-> Reliability is part of the product. Sixteen fixed scenarios cover safe additions, breaking changes, missing or contradictory metadata, truncated lineage, ownership gaps, artifact attacks, and idempotent write-back. All one hundred thirty checks pass, alongside more than fifty automated tests and a separate live MCP gate.
+> Reliability is part of the product. Sixteen fixed scenarios cover safe additions, breaking changes, contradictory metadata, truncated lineage, ownership gaps, artifact attacks, and idempotent write-back. All one hundred thirty checks pass, alongside more than ninety automated tests, three grounded model runs, and a separate live MCP gate.
 
 ## 02:45–02:55 — Close
 

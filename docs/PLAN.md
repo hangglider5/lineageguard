@@ -86,7 +86,7 @@ Implemented in fixed evaluation v1:
 - [x] bounded DeepSeek/OpenRouter planner contract and provider transport
 - [x] independent grounding validation, deterministic fallback, and redacted receipt
 - [x] zero-network planner CI with transport, adversarial, and secret-isolation tests
-- [ ] three-run real-provider planner rehearsal and committed redacted evidence
+- [x] three-run real-provider planner rehearsal and committed redacted evidence
 
 ## Schedule
 
@@ -123,16 +123,17 @@ are complete, and remote endpoints are rejected unless they use HTTPS and
 `DATAHUB_GMS_TOKEN`. The remaining auth gate is a scoped-principal MCP read/write
 rehearsal against the deployment target.
 
-The first English Devpost draft and a 364-word demo narration are also complete.
+The English Devpost draft and a 386-word AI-planner demo narration are complete.
 The public repository and evidence-backed Pages demo are configured. The deployed
 site passes desktop and mobile browser QA. The submission gate passes all local
 materials and now reports only the video URL as an external blocker.
 
 The bounded AI planner is implemented behind an explicit flag. It runs only after
 the deterministic Decision passes validation, returns a strict advisory
-`MigrationProposal`, and cannot change verdicts or write targets. The next gate is
-three accepted real-provider runs after a local API key is configured; only then
-will model-generated evidence be promoted into the public demo and submission.
+`MigrationProposal`, and cannot change verdicts or write targets. The frozen
+contract passed three of three DeepSeek rehearsals on the first attempt with all
+17 assets grounded. A representative plan, redacted receipt, and full run summary
+are now committed and cross-checked by the Pages build.
 
 The first live batch exposed occasional JSON truncation; tighter prose limits then
 produced three structurally grounded plans. Quality review found that the original
@@ -141,8 +142,8 @@ dashboard or semantic model. A stricter action contract produced three accepted
 plans, but review then found incorrect free-text counts and dependency wording
 that could be mistaken for verified graph edges. The final gate now also forbids
 count/verdict claims in model summaries, enforces nondecreasing lineage degree,
-and labels dependencies as advisory execution prerequisites. A fresh three-run
-gate against this complete contract is required before evidence promotion.
+and labels dependencies as advisory execution prerequisites. The final frozen
+contract passed its fresh three-run gate on 2026-07-30.
 
 If either gate fails, reduce scope to a CLI and a single change type. Do not
 remove evaluation or write-back.

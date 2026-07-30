@@ -1,0 +1,303 @@
+{
+  "schema_version": "1.0",
+  "scenario_id": "drop-orders-order-total",
+  "decision_id": "lineageguard:drop-orders-order-total",
+  "executive_summary": "Plan to drop order_total column from orders table, updating downstream transformations and semantic models in order of increasing dependency degree.",
+  "ordered_steps": [
+    {
+      "step_id": "step-1",
+      "sequence": 1,
+      "asset_urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.ORDER_ENTRY_DB.analytics.order_details,PROD)",
+      "action_kind": "update_transformation",
+      "impacted_columns": [
+        "order_total"
+      ],
+      "owner_urns": [
+        "urn:li:corpGroup:b2fd91.1e0398a3-113f-475e-b6fc-32ab72a634d2",
+        "urn:li:corpGroup:b2fd91.ORG_DATA_PLATFORM",
+        "urn:li:corpuser:b2fd91.EMP006",
+        "urn:li:corpuser:b2fd91.brock1@example.com",
+        "urn:li:corpuser:b2fd91.bryan@example.com",
+        "urn:li:corpuser:b2fd91.jonny1@example.com",
+        "urn:li:corpuser:b2fd91.jonny2@example.com",
+        "urn:li:corpuser:b2fd91.kirk@example.com",
+        "urn:li:corpuser:b2fd91.marty@example.com",
+        "urn:li:corpuser:b2fd91.sam@example.com"
+      ],
+      "depends_on": [],
+      "rationale": "First transformation in dependency chain, no upstream dependencies.",
+      "success_criteria": "dbt model updated to remove order_total column and all references."
+    },
+    {
+      "step_id": "step-2",
+      "sequence": 2,
+      "asset_urn": "urn:li:dataset:(urn:li:dataPlatform:snowflake,b2fd91.order_entry_db.analytics.order_details,PROD)",
+      "action_kind": "update_transformation",
+      "impacted_columns": [
+        "order_total"
+      ],
+      "owner_urns": [
+        "urn:li:corpGroup:b2fd91.1e0398a3-113f-475e-b6fc-32ab72a634d2",
+        "urn:li:corpuser:b2fd91.brock1@example.com",
+        "urn:li:corpuser:b2fd91.jonny1@example.com"
+      ],
+      "depends_on": [
+        "step-1"
+      ],
+      "rationale": "Depends on dbt order_details transformation being updated first.",
+      "success_criteria": "Snowflake view updated to exclude order_total."
+    },
+    {
+      "step_id": "step-3",
+      "sequence": 3,
+      "asset_urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.ORDER_ENTRY_DB.analytics.order_history,PROD)",
+      "action_kind": "update_transformation",
+      "impacted_columns": [
+        "order_total"
+      ],
+      "owner_urns": [],
+      "depends_on": [
+        "step-1"
+      ],
+      "rationale": "Depends on dbt order_details update as upstream source.",
+      "success_criteria": "dbt model updated to remove order_total column."
+    },
+    {
+      "step_id": "step-4",
+      "sequence": 4,
+      "asset_urn": "urn:li:dataset:(urn:li:dataPlatform:snowflake,b2fd91.order_entry_db.analytics.order_details_replica,PROD)",
+      "action_kind": "update_transformation",
+      "impacted_columns": [
+        "order_total"
+      ],
+      "owner_urns": [],
+      "depends_on": [
+        "step-2"
+      ],
+      "rationale": "Depends on Snowflake order_details update.",
+      "success_criteria": "Replica view updated to exclude order_total."
+    },
+    {
+      "step_id": "step-5",
+      "sequence": 5,
+      "asset_urn": "urn:li:dataset:(urn:li:dataPlatform:snowflake,b2fd91.order_entry_db.analytics.order_history,PROD)",
+      "action_kind": "update_transformation",
+      "impacted_columns": [
+        "order_total"
+      ],
+      "owner_urns": [],
+      "depends_on": [
+        "step-3"
+      ],
+      "rationale": "Depends on dbt order_history update.",
+      "success_criteria": "Snowflake view updated to exclude order_total."
+    },
+    {
+      "step_id": "step-6",
+      "sequence": 6,
+      "asset_urn": "urn:li:dataset:(urn:li:dataPlatform:looker,b2fd91.order-entry-looker.view.order_details,PROD)",
+      "action_kind": "update_semantic_model",
+      "impacted_columns": [
+        "order_total"
+      ],
+      "owner_urns": [
+        "urn:li:corpGroup:b2fd91.ORG_DATA_PLATFORM",
+        "urn:li:corpuser:b2fd91.EMP006",
+        "urn:li:corpuser:b2fd91.alex@example.com",
+        "urn:li:corpuser:b2fd91.marty@example.com"
+      ],
+      "depends_on": [
+        "step-1"
+      ],
+      "rationale": "Depends on dbt order_details update as source.",
+      "success_criteria": "Looker view updated to remove order_total field."
+    },
+    {
+      "step_id": "step-7",
+      "sequence": 7,
+      "asset_urn": "urn:li:dataset:(urn:li:dataPlatform:powerbi,b2fd91.datahub_order_entries.Customer_Analytics_Measures,PROD)",
+      "action_kind": "update_semantic_model",
+      "impacted_columns": [
+        "ORDER_TOTAL"
+      ],
+      "owner_urns": [],
+      "depends_on": [
+        "step-2"
+      ],
+      "rationale": "Depends on Snowflake order_details update.",
+      "success_criteria": "Power BI measure updated to remove ORDER_TOTAL."
+    },
+    {
+      "step_id": "step-8",
+      "sequence": 8,
+      "asset_urn": "urn:li:dataset:(urn:li:dataPlatform:powerbi,b2fd91.datahub_order_entries.Essential_KPI_Measures,PROD)",
+      "action_kind": "update_semantic_model",
+      "impacted_columns": [
+        "ORDER_TOTAL",
+        "Total Revenue"
+      ],
+      "owner_urns": [],
+      "depends_on": [
+        "step-2"
+      ],
+      "rationale": "Depends on Snowflake order_details update.",
+      "success_criteria": "Power BI measure updated to remove ORDER_TOTAL and Total Revenue."
+    },
+    {
+      "step_id": "step-9",
+      "sequence": 9,
+      "asset_urn": "urn:li:dataset:(urn:li:dataPlatform:powerbi,b2fd91.datahub_order_entries.Geographic_Measures,PROD)",
+      "action_kind": "update_semantic_model",
+      "impacted_columns": [
+        "ORDER_TOTAL"
+      ],
+      "owner_urns": [],
+      "depends_on": [
+        "step-2"
+      ],
+      "rationale": "Depends on Snowflake order_details update.",
+      "success_criteria": "Power BI measure updated to remove ORDER_TOTAL."
+    },
+    {
+      "step_id": "step-10",
+      "sequence": 10,
+      "asset_urn": "urn:li:dataset:(urn:li:dataPlatform:powerbi,b2fd91.datahub_order_entries.ORDER_DETAILS,PROD)",
+      "action_kind": "update_semantic_model",
+      "impacted_columns": [
+        "ORDER_TOTAL"
+      ],
+      "owner_urns": [
+        "urn:li:corpuser:b2fd91.kirk@example.com"
+      ],
+      "depends_on": [
+        "step-2"
+      ],
+      "rationale": "Depends on Snowflake order_details update.",
+      "success_criteria": "Power BI semantic model updated to remove ORDER_TOTAL."
+    },
+    {
+      "step_id": "step-11",
+      "sequence": 11,
+      "asset_urn": "urn:li:dataset:(urn:li:dataPlatform:powerbi,b2fd91.datahub_order_entries.Product_Perfromance_Measures,PROD)",
+      "action_kind": "update_semantic_model",
+      "impacted_columns": [
+        "ORDER_TOTAL"
+      ],
+      "owner_urns": [],
+      "depends_on": [
+        "step-2"
+      ],
+      "rationale": "Depends on Snowflake order_details update.",
+      "success_criteria": "Power BI measure updated to remove ORDER_TOTAL."
+    },
+    {
+      "step_id": "step-12",
+      "sequence": 12,
+      "asset_urn": "urn:li:dataset:(urn:li:dataPlatform:powerbi,b2fd91.datahub_order_entries.Time_Inteligence_Measures,PROD)",
+      "action_kind": "update_semantic_model",
+      "impacted_columns": [
+        "ORDER_TOTAL"
+      ],
+      "owner_urns": [],
+      "depends_on": [
+        "step-2"
+      ],
+      "rationale": "Depends on Snowflake order_details update.",
+      "success_criteria": "Power BI measure updated to remove ORDER_TOTAL."
+    },
+    {
+      "step_id": "step-13",
+      "sequence": 13,
+      "asset_urn": "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.37fcfb15-34ae-973a-5ae3-cf63691d48e3,PROD)",
+      "action_kind": "update_semantic_model",
+      "impacted_columns": [
+        "AVERAGE_ORDER_VALUE",
+        "TOTAL_REVENUE"
+      ],
+      "owner_urns": [],
+      "depends_on": [
+        "step-2"
+      ],
+      "rationale": "Depends on Snowflake order_details update.",
+      "success_criteria": "Tableau datasource updated to remove AVERAGE_ORDER_VALUE and TOTAL_REVENUE."
+    },
+    {
+      "step_id": "step-14",
+      "sequence": 14,
+      "asset_urn": "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.8bfe7483-1c9a-a0e1-ec84-57207dd37a15,PROD)",
+      "action_kind": "update_semantic_model",
+      "impacted_columns": [
+        "AVERAGE_ORDER_VALUE",
+        "TOTAL_REVENUE"
+      ],
+      "owner_urns": [],
+      "depends_on": [
+        "step-2"
+      ],
+      "rationale": "Depends on Snowflake order_details update.",
+      "success_criteria": "Tableau datasource updated to remove AVERAGE_ORDER_VALUE and TOTAL_REVENUE."
+    },
+    {
+      "step_id": "step-15",
+      "sequence": 15,
+      "asset_urn": "urn:li:dataset:(urn:li:dataPlatform:looker,b2fd91.order-entry.explore.order_details,PROD)",
+      "action_kind": "update_semantic_model",
+      "impacted_columns": [
+        "order_details.order_total"
+      ],
+      "owner_urns": [
+        "urn:li:corpGroup:b2fd91.ORG_BACKEND_ENG",
+        "urn:li:corpGroup:b2fd91.ORG_DATA_PLATFORM",
+        "urn:li:corpuser:b2fd91.EMP006"
+      ],
+      "depends_on": [
+        "step-6"
+      ],
+      "rationale": "Depends on Looker view update.",
+      "success_criteria": "Looker explore updated to remove order_total field."
+    },
+    {
+      "step_id": "step-16",
+      "sequence": 16,
+      "asset_urn": "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.b980a8c5-28eb-119e-f6ca-4da32732e5be,PROD)",
+      "action_kind": "update_semantic_model",
+      "impacted_columns": [
+        "AVERAGE_ORDER_VALUE",
+        "TOTAL_REVENUE"
+      ],
+      "owner_urns": [
+        "urn:li:corpuser:b2fd91.brock1@example.com"
+      ],
+      "depends_on": [
+        "step-13",
+        "step-14"
+      ],
+      "rationale": "Depends on Tableau datasource updates.",
+      "success_criteria": "Tableau workbook updated to remove AVERAGE_ORDER_VALUE and TOTAL_REVENUE."
+    },
+    {
+      "step_id": "step-17",
+      "sequence": 17,
+      "asset_urn": "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.c067553a-127e-a871-14a0-5f32cb032c78,PROD)",
+      "action_kind": "update_semantic_model",
+      "impacted_columns": [
+        "AVERAGE_ORDER_VALUE",
+        "TOTAL_REVENUE"
+      ],
+      "owner_urns": [
+        "urn:li:corpuser:b2fd91.brock1@example.com"
+      ],
+      "depends_on": [
+        "step-13",
+        "step-14"
+      ],
+      "rationale": "Depends on Tableau datasource updates.",
+      "success_criteria": "Tableau workbook updated to remove AVERAGE_ORDER_VALUE and TOTAL_REVENUE."
+    }
+  ],
+  "open_questions": [
+    "Are there any downstream dashboards or reports that consume these assets and need separate verification?",
+    "How will we handle the missing owners for several Power BI and Tableau assets?",
+    "Should we schedule a communication window with all asset owners before executing changes?"
+  ]
+}

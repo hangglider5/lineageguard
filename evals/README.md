@@ -19,6 +19,11 @@ The full live gate adds `--planner model --require-planner` to the normal workfl
 Neither real-provider path runs in GitHub Actions or exposes a key to the DataHub
 MCP child process.
 
+The frozen-contract DeepSeek rehearsal passed 3/3 runs on the first attempt. Its
+redacted report and representative plan are committed under
+`examples/drop-orders-order-total/` and independently cross-checked by the Pages
+build before publication.
+
 ## Fixed offline suite
 
 `suite.json` contains 16 strict, versioned cases with explicit schema changes,

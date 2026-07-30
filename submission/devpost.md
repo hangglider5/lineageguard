@@ -14,6 +14,8 @@ LineageGuard is a pre-merge schema-change agent built on DataHub OSS and the Dat
 
 After the deterministic verdict is validated, an optional bounded AI planner turns the attributable graph evidence into an ordered, platform-aware migration plan. The model cannot change the verdict, invent assets or owners, emit executable code, or call DataHub mutation tools. DeepSeek Official API and OpenRouter share the same strict output contract, semantic validator, redacted receipt, and deterministic fallback.
 
+Against the frozen contract, DeepSeek completed three of three live rehearsals on the first attempt. Every run covered the same 17 assets, copied exact column and owner evidence, used the single action allowed by each graph entity, and moved through nondecreasing lineage degree. The permanent demo publishes the representative plan and redacted run evidence.
+
 The primary demo asks whether a team can drop `orders.order_total`. LineageGuard verifies the dbt field and its `FLOAT` type, discovers 17 attributable downstream column consumers, and returns `BLOCK / HIGH` with accountable owners, domain fallbacks, migration actions, and a read-only validation query.
 
 ## How it works
@@ -23,7 +25,8 @@ The primary demo asks whether a team can drop `orders.order_total`. LineageGuard
 3. It verifies the source schema and retrieves bounded, deduplicated column lineage.
 4. A fail-closed policy turns attributable graph evidence into a structured Decision.
 5. A separate validator rejects unsupported assets, owner or domain misrouting, unsafe SQL, incomplete lineage, and verdict tampering.
-6. An explicit mutation path saves the validated Decision as a DataHub Document and reads back both the Document and its relationship to the source asset.
+6. The bounded planner proposes an ordered advisory plan; a second validator checks its exact assets, evidence, actions, ordering, and non-executable text.
+7. An explicit mutation path saves the validated Decision as a DataHub Document and reads back both the Document and its relationship to the source asset.
 
 The live demo API is intentionally read-only. The [permanent GitHub Pages demo](https://hangglider5.github.io/lineageguard/) transparently replays a committed, validated evidence snapshot without secrets; the local live run and authenticated write-back receipt prove the DataHub interaction. Graph mutation remains a separately authorized, auditable operation.
 
@@ -33,7 +36,7 @@ DataHub is the system of context and the system of record for the result. Lineag
 
 ## Validation
 
-The fixed evaluation suite contains 16 versioned cases and 130 exact checks covering safe additions, breaking changes, type mismatches, missing fields, truncated lineage, ownership gaps, domain routing, artifact tampering, unsafe SQL, and verified idempotent write-back. All cases pass. More than 80 automated tests additionally cover the bounded planner contract, provider envelopes, malicious model outputs, transient failures, deterministic fallback, and secret isolation. A separate live MCP-backed gate rechecks all 17 downstream assets, and a PAT-authenticated receipt proves read/write/read-back behavior.
+The fixed evaluation suite contains 16 versioned cases and 130 exact checks covering safe additions, breaking changes, type mismatches, missing fields, truncated lineage, ownership gaps, domain routing, artifact tampering, unsafe SQL, and verified idempotent write-back. All cases pass. More than 90 automated tests additionally cover the bounded planner contract, provider envelopes, malicious model outputs, transient failures, deterministic fallback, and secret isolation. Three frozen-contract DeepSeek runs passed with 17/17 grounded assets and no retries. A separate live MCP-backed gate rechecks all 17 downstream assets, and a PAT-authenticated receipt proves read/write/read-back behavior.
 
 ## What makes it different
 
@@ -50,11 +53,11 @@ LineageGuard does not rebuild DataHub's impact-analysis UI. It closes the operat
 
 ## Challenges
 
-DataHub Core does not expose the managed `/mcp` endpoint, so the OSS deployment needs the standalone MCP server. Raw multi-hop lineage exceeded 100,000 characters, which required deterministic compaction and an independent completeness proof. We also found that the DataHub SDK and MCP process expect `DATAHUB_GMS_TOKEN`, and verified the full authenticated path after enabling Metadata Service Authentication locally.
+DataHub Core does not expose the managed `/mcp` endpoint, so the OSS deployment needs the standalone MCP server. Raw multi-hop lineage exceeded 100,000 characters, which required deterministic compaction and an independent completeness proof. Early real-model rehearsals exposed JSON truncation, ambiguous BI action labels, and unsupported free-text counts; those failures drove tighter output limits, per-asset action allowlists, lineage-degree ordering, and explicit advisory boundaries. We also verified the authenticated read/write/read-back path after enabling Metadata Service Authentication locally.
 
 ## What's next
 
-The next release gates are a three-run real-provider planner rehearsal, a dedicated least-privilege DataHub principal, pull-request integration, and a second live change scenario. The public surface will remain read-only unless a separately authenticated, budget-limited model endpoint is deployed.
+The next release gates are a dedicated least-privilege DataHub principal, pull-request integration, and a second live change scenario. The public surface will remain read-only unless a separately authenticated, budget-limited model endpoint is deployed.
 
 ## Disclosures
 

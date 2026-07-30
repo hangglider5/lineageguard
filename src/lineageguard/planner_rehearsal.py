@@ -7,6 +7,7 @@ import asyncio
 import json
 import os
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Sequence
 
@@ -20,6 +21,9 @@ from .planner import PlannerOutcome, PlannerReceipt, PlannerStatus, run_model_pl
 
 class PlannerRehearsalReport(StrictModel):
     schema_version: str = "1.0"
+    evaluated_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
     provider: str
     model: str
     total_runs: int = Field(ge=1, le=5)

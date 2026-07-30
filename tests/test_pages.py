@@ -23,6 +23,10 @@ class PagesBuildTests(unittest.TestCase):
             self.assertEqual(snapshot["mode"], "verified_evidence_snapshot")
             self.assertEqual(snapshot["artifact"]["evidence"]["downstream_total"], 17)
             self.assertTrue(snapshot["verification"]["authenticated_write_back_verified"])
+            self.assertEqual(snapshot["verification"]["planner_runs"], 3)
+            self.assertEqual(snapshot["verification"]["planner_accepted_runs"], 3)
+            self.assertEqual(len(snapshot["planner"]["proposal"]["ordered_steps"]), 17)
+            self.assertEqual(snapshot["planner"]["receipt"]["status"], "accepted")
 
     def test_pages_assets_use_project_relative_urls(self) -> None:
         with TemporaryDirectory() as temporary:

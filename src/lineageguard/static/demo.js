@@ -28,6 +28,7 @@ const elements = {
   owners: document.querySelector("#owners-detail"),
   migration: document.querySelector("#migration-detail"),
   query: document.querySelector("#query-detail"),
+  validation: document.querySelector("#validation-detail"),
   latency: document.querySelector("#latency"),
 };
 
@@ -67,6 +68,7 @@ function actionByKind(actions, kind) {
 
 function renderResult(payload) {
   const artifact = payload.artifact;
+  const planner = payload.planner;
   const evidence = artifact.evidence;
   elements.verdict.textContent = String(payload.verdict).toUpperCase();
   elements.severity.textContent = String(payload.severity).toUpperCase();
@@ -92,7 +94,15 @@ function renderResult(payload) {
   const migrate = actionByKind(artifact.required_actions, "migrate_dependents");
   const validate = actionByKind(artifact.required_actions, "run_validation");
   elements.owners.textContent = notify ? `${notify.owner_urns.length} accountable owners` : "Owner routing required";
-  elements.migration.textContent = migrate ? `${migrate.asset_urns.length} impacted assets` : "Compatibility work required";
+  if (planner) {
+    const steps = planner.proposal.ordered_steps;
+    const rehearsal = planner.rehearsal;
+    elements.migration.textContent = `${steps.length} AI-planned assets · ${rehearsal.accepted_runs}/${rehearsal.total_runs} live runs`;
+    elements.validation.textContent = "Decision + bounded AI plan validated · 0 unsupported structured claims";
+  } else {
+    elements.migration.textContent = migrate ? `${migrate.asset_urns.length} impacted assets` : "Compatibility work required";
+    elements.validation.textContent = "Decision artifact validated · 0 unsupported claims";
+  }
   elements.query.textContent = validate ? `${artifact.validation_queries.length} read-only query` : "Validation required";
   elements.latency.textContent = payload.result_meta || `${Number(payload.latency_ms).toFixed(0)} ms · ${payload.request_id.slice(0, 8)}`;
   elements.freshness.textContent = payload.result_freshness || "Live result";
