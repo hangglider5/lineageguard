@@ -44,14 +44,19 @@ The first end-to-end scenario passed on 2026-07-23:
   new assets or owners, emit executable code, or write to DataHub. DeepSeek and
   OpenRouter use the same strict contract. The frozen DeepSeek contract passed
   three of three live rehearsals on the first attempt with 17/17 grounded assets;
-  real-provider calls remain opt-in and never run in offline CI.
+  real-provider calls remain opt-in and never run in offline CI. A subsequent
+  live integrated run completed MCP graph read, accepted planning, Document
+  update, Document read-back, and source-relationship read-back in one workflow.
 
 The resulting artifacts are committed under
 [`examples/drop-orders-order-total/`](examples/drop-orders-order-total/).
 Interface evidence is at [`examples/interface-probe.json`](examples/interface-probe.json),
 authenticated evidence is at
 [`examples/authenticated-gate.json`](examples/authenticated-gate.json), and the
-proposal review and known risks are in [`docs/REVIEW.md`](docs/REVIEW.md).
+integrated planner/write-back receipt is at
+[`examples/drop-orders-order-total/integrated-workflow.json`](examples/drop-orders-order-total/integrated-workflow.json),
+with its exact plan and sidecars beside it. The proposal review and known risks
+are in [`docs/REVIEW.md`](docs/REVIEW.md).
 
 ## Local setup
 

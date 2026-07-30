@@ -23,7 +23,9 @@ repository secrets.
 `.github/workflows/pages.yml` builds and deploys the permanent judge-facing
 static surface. The build reads only committed evidence and requires agreement
 between the Decision artifact, live MCP evaluation, fixed evaluation, authenticated
-write-back, Document read-back, and source-relationship read-back. The rendered
+write-back, the frozen planner rehearsal, and the integrated planner/write-back
+receipt. It verifies the exact integrated plan and sidecar hashes plus both
+Document and source-relationship read-back. The rendered
 page says **Verified evidence snapshot** and never claims that a button click is a
 new DataHub request.
 
@@ -147,6 +149,12 @@ and completed MCP read, idempotent Decision write-back, document read-back, and
 source-relationship read-back through `DATAHUB_GMS_TOKEN`. The PAT was not logged
 or committed and was invalidated when the rehearsal stack returned to its normal
 Quickstart signing configuration.
+
+On 2026-07-30, an opt-in integrated proof used the same frozen 17-asset context
+and prompt as the final DeepSeek rehearsal. The plan passed on its first attempt,
+then the workflow updated the existing Decision Document and verified both
+read-back paths. Only redacted receipts, exact output files, and their SHA-256
+fingerprints are committed; model credentials and raw prompts are excluded.
 
 That proves authenticated transport and MCP compatibility, but not least-privilege
 authorization: the rehearsal PAT belonged to the local administrator. A dedicated

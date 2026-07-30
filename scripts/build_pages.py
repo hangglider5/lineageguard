@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import shutil
 from pathlib import Path
@@ -105,6 +106,125 @@ def _validated_planner_evidence(
     }
 
 
+def _validated_integrated_evidence(
+    repository_root: Path,
+    artifact: dict[str, Any],
+    planner: dict[str, Any],
+) -> dict[str, Any]:
+    evidence_path = (
+        repository_root
+        / "examples/drop-orders-order-total/integrated-workflow.json"
+    )
+    integrated = _load_json(evidence_path)
+    integrated_plan_path = (
+        repository_root
+        / "examples/drop-orders-order-total/integrated-migration-plan.json"
+    )
+    integrated_receipt_path = (
+        repository_root
+        / "examples/drop-orders-order-total/integrated-planner-receipt.json"
+    )
+    integrated_write_back_path = (
+        repository_root
+        / "examples/drop-orders-order-total/integrated-write-back.json"
+    )
+    integrated_plan = _load_json(integrated_plan_path)
+    integrated_receipt = _load_json(integrated_receipt_path)
+    integrated_write_back = _load_json(integrated_write_back_path)
+    decision = integrated.get("decision", {})
+    planner_run = integrated.get("planner", {})
+    write_back = integrated.get("write_back", {})
+    hashes = integrated.get("artifact_sha256", {})
+    frozen_receipts = planner["rehearsal"].get("receipts", [])
+    frozen_context_hashes = {
+        receipt.get("context_sha256") for receipt in frozen_receipts
+    }
+    frozen_prompt_hashes = {
+        receipt.get("prompt_sha256") for receipt in frozen_receipts
+    }
+    decision_path = (
+        repository_root / "examples/drop-orders-order-total/decision.json"
+    )
+    decision_hash = hashlib.sha256(decision_path.read_bytes()).hexdigest()
+    action_counts = planner_run.get("action_counts", {})
+    integrated_steps = integrated_plan.get("ordered_steps", [])
+    integrated_step_urns = [step.get("asset_urn") for step in integrated_steps]
+    artifact_urns = [asset.get("urn") for asset in artifact.get("impacted_assets", [])]
+    integrated_action_counts = {
+        action: sum(step.get("action_kind") == action for step in integrated_steps)
+        for action in action_counts
+    }
+    calculated_hashes = {
+        "decision": decision_hash,
+        "migration_plan": hashlib.sha256(integrated_plan_path.read_bytes()).hexdigest(),
+        "planner_receipt": hashlib.sha256(
+            integrated_receipt_path.read_bytes()
+        ).hexdigest(),
+        "write_back": hashlib.sha256(
+            integrated_write_back_path.read_bytes()
+        ).hexdigest(),
+    }
+    required = {
+        "integrated mode": integrated.get("workflow_mode")
+        == "live_mcp_model_planner_write_back",
+        "integrated scenario": integrated.get("scenario_id")
+        == artifact.get("scenario_id"),
+        "integrated decision id": integrated.get("decision_id")
+        == artifact.get("decision_id"),
+        "integrated verdict": decision.get("verdict") == artifact.get("verdict"),
+        "integrated severity": decision.get("severity") == artifact.get("severity"),
+        "integrated count": decision.get("downstream_total")
+        == artifact.get("evidence", {}).get("downstream_total"),
+        "integrated completeness": decision.get("lineage_complete") is True,
+        "integrated decision validation": not decision.get("validation_errors"),
+        "integrated planner status": planner_run.get("status") == "accepted",
+        "integrated planner provider": planner_run.get("provider")
+        == planner["rehearsal"].get("provider"),
+        "integrated planner model": planner_run.get("model")
+        == planner["rehearsal"].get("model"),
+        "integrated planner attempt": planner_run.get("attempts") == 1,
+        "integrated planner validation": not planner_run.get("validation_errors"),
+        "integrated planner context": planner_run.get("context_sha256")
+        in frozen_context_hashes,
+        "integrated planner prompt": planner_run.get("prompt_sha256")
+        in frozen_prompt_hashes,
+        "integrated planner coverage": planner_run.get("grounded_step_count")
+        == planner_run.get("unique_asset_count")
+        == 17,
+        "integrated exact coverage": set(integrated_step_urns) == set(artifact_urns)
+        and len(integrated_step_urns) == len(set(integrated_step_urns)) == 17,
+        "integrated planner actions": action_counts
+        == {"update_semantic_model": 12, "update_transformation": 5},
+        "integrated exact actions": integrated_action_counts == action_counts,
+        "integrated receipt status": integrated_receipt.get("status")
+        == planner_run.get("status"),
+        "integrated receipt context": integrated_receipt.get("context_sha256")
+        == planner_run.get("context_sha256"),
+        "integrated receipt response": integrated_receipt.get("response_sha256")
+        == planner_run.get("response_sha256"),
+        "integrated receipt validation": not integrated_receipt.get(
+            "validation_errors"
+        ),
+        "integrated write-back": write_back.get("success") is True,
+        "integrated exact write-back": integrated_write_back == write_back,
+        "integrated document read-back": write_back.get("document_read_back_verified")
+        is True,
+        "integrated relationship read-back": write_back.get(
+            "source_relationship_verified"
+        )
+        is True,
+        "integrated relationship count": write_back.get("related_assets_requested")
+        == 18,
+        "integrated artifact hashes": hashes == calculated_hashes,
+    }
+    failed = [name for name, passed in required.items() if not passed]
+    if failed:
+        raise ValueError(
+            "inconsistent committed integrated evidence: " + ", ".join(failed)
+        )
+    return integrated
+
+
 def _validated_snapshot(repository_root: Path) -> dict[str, Any]:
     artifact = _load_json(
         repository_root / "examples/drop-orders-order-total/decision.json"
@@ -113,6 +233,7 @@ def _validated_snapshot(repository_root: Path) -> dict[str, Any]:
     fixed = _load_json(repository_root / "examples/evaluation-report.json")
     authenticated = _load_json(repository_root / "examples/authenticated-gate.json")
     planner = _validated_planner_evidence(repository_root, artifact)
+    integrated = _validated_integrated_evidence(repository_root, artifact, planner)
 
     evidence = artifact.get("evidence", {})
     actual = live.get("actual", {})
@@ -151,6 +272,7 @@ def _validated_snapshot(repository_root: Path) -> dict[str, Any]:
         "result_meta": f"{latency:,.0f} ms live MCP gate",
         "artifact": artifact,
         "planner": planner,
+        "integrated_workflow": integrated,
         "verification": {
             "datahub_core_version": authenticated.get("datahub_core_version"),
             "mcp_server_datahub_version": authenticated.get(
@@ -166,6 +288,8 @@ def _validated_snapshot(repository_root: Path) -> dict[str, Any]:
             "planner_accepted_runs": planner["rehearsal"]["accepted_runs"],
             "planner_model": planner["rehearsal"]["model"],
             "planner_evaluated_at": planner["rehearsal"]["evaluated_at"],
+            "integrated_planner_write_back_verified": True,
+            "integrated_workflow_verified_at": integrated["verified_at"],
         },
     }
 
@@ -217,7 +341,7 @@ def build_pages(repository_root: Path, output: Path) -> Path:
     html = _replace_once(
         html,
         "Read-only public demo · No graph changes",
-        "Verified snapshot · Live MCP and write-back evidence linked in the repository",
+        "Verified snapshot · Integrated MCP, AI planning, and write-back evidence linked in the repository",
     )
     (output / "index.html").write_text(html, "utf-8")
     (output / ".nojekyll").write_text("", "utf-8")

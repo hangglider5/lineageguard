@@ -27,6 +27,13 @@ class PagesBuildTests(unittest.TestCase):
             self.assertEqual(snapshot["verification"]["planner_accepted_runs"], 3)
             self.assertEqual(len(snapshot["planner"]["proposal"]["ordered_steps"]), 17)
             self.assertEqual(snapshot["planner"]["receipt"]["status"], "accepted")
+            self.assertTrue(
+                snapshot["verification"]["integrated_planner_write_back_verified"]
+            )
+            self.assertEqual(
+                snapshot["integrated_workflow"]["write_back"]["document_urn"],
+                "urn:li:document:shared-cadcf907-2b52-4bd9-be46-f3831ca8eeb3",
+            )
 
     def test_pages_assets_use_project_relative_urls(self) -> None:
         with TemporaryDirectory() as temporary:

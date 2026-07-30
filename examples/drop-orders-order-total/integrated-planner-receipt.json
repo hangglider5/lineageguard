@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "status": "accepted",
+  "provider": "deepseek",
+  "model": "deepseek-v4-flash",
+  "actual_provider": "deepseek",
+  "request_id": "c7f7d8e4-4081-402d-88dd-d239c72daca7",
+  "finish_reason": "stop",
+  "input_tokens": 3163,
+  "output_tokens": 3091,
+  "response_chars": 10406,
+  "latency_ms": 16294.764,
+  "attempts": 1,
+  "context_sha256": "8cf7ae6cc23ae6d91ca35d66b576284f6e00eb42d4163cb8f1d90f60bfb6c740",
+  "prompt_sha256": "6424da463559c41228fef8a7915c4318b1930c9190cbfcd4845b2d6fcb1c1ccd",
+  "response_sha256": "d45461b34188422527d63e23ef574fdb23a69d9e4a41bad763f43226217d4d5b",
+  "thinking_enabled": false,
+  "structured_output": "json_object",
+  "validation_errors": [],
+  "fallback_reason": null
+}

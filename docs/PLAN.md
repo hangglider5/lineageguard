@@ -87,6 +87,7 @@ Implemented in fixed evaluation v1:
 - [x] independent grounding validation, deterministic fallback, and redacted receipt
 - [x] zero-network planner CI with transport, adversarial, and secret-isolation tests
 - [x] three-run real-provider planner rehearsal and committed redacted evidence
+- [x] single-run live MCP + accepted planner + verified write-back/read-back loop
 
 ## Schedule
 
@@ -134,6 +135,12 @@ the deterministic Decision passes validation, returns a strict advisory
 contract passed three of three DeepSeek rehearsals on the first attempt with all
 17 assets grounded. A representative plan, redacted receipt, and full run summary
 are now committed and cross-checked by the Pages build.
+
+On Jul 30, the same frozen graph context and prompt were exercised through the
+complete mutation workflow. DeepSeek accepted the 17-asset plan on its first
+attempt; LineageGuard then updated the existing Decision Document and verified
+both Document read-back and the source asset relationship. A redacted integrated
+receipt is committed and cross-checked by the Pages build.
 
 The first live batch exposed occasional JSON truncation; tighter prose limits then
 produced three structurally grounded plans. Quality review found that the original

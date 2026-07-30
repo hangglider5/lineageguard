@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0",
+  "verified_at": "2026-07-30T11:53:10Z",
+  "workflow_mode": "live_mcp_model_planner_write_back",
+  "scenario_id": "drop-orders-order-total",
+  "decision_id": "lineageguard:drop-orders-order-total",
+  "decision": {
+    "verdict": "block",
+    "severity": "high",
+    "downstream_total": 17,
+    "lineage_complete": true,
+    "validation_errors": []
+  },
+  "planner": {
+    "status": "accepted",
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "actual_provider": "deepseek",
+    "finish_reason": "stop",
+    "input_tokens": 3163,
+    "output_tokens": 3091,
+    "response_chars": 10406,
+    "latency_ms": 16294.764,
+    "attempts": 1,
+    "context_sha256": "8cf7ae6cc23ae6d91ca35d66b576284f6e00eb42d4163cb8f1d90f60bfb6c740",
+    "prompt_sha256": "6424da463559c41228fef8a7915c4318b1930c9190cbfcd4845b2d6fcb1c1ccd",
+    "response_sha256": "d45461b34188422527d63e23ef574fdb23a69d9e4a41bad763f43226217d4d5b",
+    "validation_errors": [],
+    "grounded_step_count": 17,
+    "unique_asset_count": 17,
+    "action_counts": {
+      "update_semantic_model": 12,
+      "update_transformation": 5
+    }
+  },
+  "write_back": {
+    "success": true,
+    "document_urn": "urn:li:document:shared-cadcf907-2b52-4bd9-be46-f3831ca8eeb3",
+    "document_read_back_verified": true,
+    "source_relationship_verified": true,
+    "related_assets_requested": 18
+  },
+  "artifact_sha256": {
+    "decision": "dd5ebb1062e4cae28b188dccc52006169c2375546260054bc49ebfed8538d1d6",
+    "migration_plan": "be1bd2236aa69bbb551a6301a17ac6a329f43bdc604d3fa516f6b64dc172cd8b",
+    "planner_receipt": "aae03b168bb30aee5de96848a1c8d485b1b1f06b6615a117fad7cff4f6f0456f",
+    "write_back": "581605a35b5e4bdfd6e62e0f47d2a797e1fbe547ffd87b7e4a9b6d4631530281"
+  }
+}

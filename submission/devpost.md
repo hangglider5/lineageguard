@@ -14,7 +14,7 @@ LineageGuard is a pre-merge schema-change agent built on DataHub OSS and the Dat
 
 After the deterministic verdict is validated, an optional bounded AI planner turns the attributable graph evidence into an ordered, platform-aware migration plan. The model cannot change the verdict, invent assets or owners, emit executable code, or call DataHub mutation tools. DeepSeek Official API and OpenRouter share the same strict output contract, semantic validator, redacted receipt, and deterministic fallback.
 
-Against the frozen contract, DeepSeek completed three of three live rehearsals on the first attempt. Every run covered the same 17 assets, copied exact column and owner evidence, used the single action allowed by each graph entity, and moved through nondecreasing lineage degree. The permanent demo publishes the representative plan and redacted run evidence.
+Against the frozen contract, DeepSeek completed three of three live rehearsals on the first attempt. Every run covered the same 17 assets, copied exact column and owner evidence, used the single action allowed by each graph entity, and moved through nondecreasing lineage degree. A subsequent integrated run used the same frozen context to complete live MCP read, accepted planning, Decision update, Document read-back, and source-relationship read-back in one workflow. The permanent demo publishes the representative plan and redacted run evidence.
 
 The primary demo asks whether a team can drop `orders.order_total`. LineageGuard verifies the dbt field and its `FLOAT` type, discovers 17 attributable downstream column consumers, and returns `BLOCK / HIGH` with accountable owners, domain fallbacks, migration actions, and a read-only validation query.
 
@@ -36,7 +36,7 @@ DataHub is the system of context and the system of record for the result. Lineag
 
 ## Validation
 
-The fixed evaluation suite contains 16 versioned cases and 130 exact checks covering safe additions, breaking changes, type mismatches, missing fields, truncated lineage, ownership gaps, domain routing, artifact tampering, unsafe SQL, and verified idempotent write-back. All cases pass. More than 90 automated tests additionally cover the bounded planner contract, provider envelopes, malicious model outputs, transient failures, deterministic fallback, and secret isolation. Three frozen-contract DeepSeek runs passed with 17/17 grounded assets and no retries. A separate live MCP-backed gate rechecks all 17 downstream assets, and a PAT-authenticated receipt proves read/write/read-back behavior.
+The fixed evaluation suite contains 16 versioned cases and 130 exact checks covering safe additions, breaking changes, type mismatches, missing fields, truncated lineage, ownership gaps, domain routing, artifact tampering, unsafe SQL, and verified idempotent write-back. All cases pass. More than 90 automated tests additionally cover the bounded planner contract, provider envelopes, malicious model outputs, transient failures, deterministic fallback, and secret isolation. Three frozen-contract DeepSeek runs passed with 17/17 grounded assets and no retries. A separate live MCP-backed gate rechecks all 17 downstream assets, and a redacted integrated receipt proves that accepted model planning and live MCP write/read-back can complete in the same execution; the PAT receipt separately proves authenticated transport.
 
 ## What makes it different
 

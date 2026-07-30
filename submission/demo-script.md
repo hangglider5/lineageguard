@@ -30,7 +30,7 @@ Target length: 2 minutes 55 seconds. Spoken narration is represented by blockquo
 
 **Shot:** Run the explicit CLI write-back command, then show the receipt and the related Decision Document in DataHub.
 
-> Write-back is deliberately separate and explicit. With mutation enabled, LineageGuard saves the validated result as a DataHub Decision related to the source and all seventeen impacted assets. It then reads the Document back by URN and verifies that the source asset exposes the same relationship. A retry can update the same Document instead of creating duplicates.
+> Write-back is deliberately explicit. In our integrated proof run, the accepted model plan and validated Decision stayed in the same workflow before LineageGuard updated the existing DataHub Decision related to the source and all seventeen impacted assets. It then read the Document back by URN and verified that the source asset exposed the same relationship, without creating a duplicate.
 
 ## 02:25–02:45 — Show evaluation evidence
 
