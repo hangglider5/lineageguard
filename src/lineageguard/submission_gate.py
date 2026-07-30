@@ -23,9 +23,30 @@ REQUIRED_DEVPOST_SECTIONS = {
     "What's next",
     "Disclosures",
 }
+REQUIRED_JUDGE_GUIDE_SECTIONS = {
+    "60-second path",
+    "Evidence map",
+    "Five-minute source verification",
+    "Full live reproduction",
+    "What the video proves",
+}
 EXTERNAL_URL_FIELDS = ("repository_url", "project_url", "video_url")
 VIDEO_HOSTS = {"youtube.com", "www.youtube.com", "youtu.be", "vimeo.com", "youku.com", "www.youku.com"}
 REQUIRED_AVAILABILITY_UNTIL = "2026-09-01T05:00:00+08:00"
+REQUIRED_SAMPLE_OUTPUTS = {
+    "examples/drop-orders-order-total/decision.json",
+    "examples/drop-orders-order-total/migration-checklist.md",
+    "examples/drop-orders-order-total/migration-plan.json",
+    "examples/drop-orders-order-total/planner-receipt.json",
+    "examples/drop-orders-order-total/planner-rehearsal.json",
+    "examples/drop-orders-order-total/integrated-migration-plan.json",
+    "examples/drop-orders-order-total/integrated-planner-receipt.json",
+    "examples/drop-orders-order-total/integrated-workflow.json",
+    "examples/drop-orders-order-total/integrated-write-back.json",
+    "examples/evaluation-report.json",
+    "examples/live-evaluation.json",
+    "examples/authenticated-gate.json",
+}
 
 
 @dataclass(frozen=True)
@@ -122,9 +143,18 @@ def validate_submission_manifest(
     if not isinstance(sample_outputs, list):
         errors.append("materials sample_outputs must be a list")
         sample_outputs = []
+    missing_outputs = REQUIRED_SAMPLE_OUTPUTS - set(
+        path for path in sample_outputs if isinstance(path, str)
+    )
+    if missing_outputs:
+        errors.append(
+            "materials sample_outputs omitted required evidence: "
+            + ", ".join(sorted(missing_outputs))
+        )
     required_paths = [
         materials.get("description"),
         materials.get("demo_script"),
+        materials.get("judge_guide"),
         materials.get("license"),
         materials.get("readme"),
         *sample_outputs,
@@ -145,6 +175,15 @@ def validate_submission_manifest(
         )
     if re.search(r"\b(TODO|TBD)\b|example\.com", description, re.IGNORECASE):
         errors.append("Devpost draft contains a placeholder")
+
+    judge_guide_path = materials.get("judge_guide", "")
+    judge_guide = contents.get(judge_guide_path, "")
+    missing_guide_sections = REQUIRED_JUDGE_GUIDE_SECTIONS - _headings(judge_guide)
+    if missing_guide_sections:
+        errors.append(
+            "judge guide is missing sections: "
+            + ", ".join(sorted(missing_guide_sections))
+        )
 
     demo_script_path = materials.get("demo_script", "")
     demo_script = contents.get(demo_script_path, "")

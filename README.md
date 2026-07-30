@@ -11,6 +11,17 @@ is **2026-08-11 05:00 China Standard Time** (2026-08-10 17:00 EDT).
 [Inspect the verified public evidence demo](https://hangglider5.github.io/lineageguard/)
 or follow the live local MCP workflow below.
 
+## Judge quick path
+
+1. **See the result:** open the public demo and select **Inspect verified
+   evidence**; expect `BLOCK / HIGH`, 17 downstream assets, and 3/3 accepted
+   planner runs.
+2. **Audit the loop:** inspect the
+   [integrated workflow receipt](examples/drop-orders-order-total/integrated-workflow.json),
+   exact plan, and write/read-back sidecars.
+3. **Reproduce it:** follow the concise [judge guide](JUDGE_GUIDE.md) for either
+   the five-minute offline gate or full local DataHub workflow.
+
 ## Current status
 
 The first end-to-end scenario passed on 2026-07-23:

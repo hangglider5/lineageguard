@@ -9,12 +9,20 @@
   "materials": {
     "description": "submission/devpost.md",
     "demo_script": "submission/demo-script.md",
+    "judge_guide": "JUDGE_GUIDE.md",
     "license": "LICENSE",
     "readme": "README.md",
     "sample_outputs": [
       "examples/drop-orders-order-total/decision.json",
       "examples/drop-orders-order-total/migration-checklist.md",
+      "examples/drop-orders-order-total/migration-plan.json",
+      "examples/drop-orders-order-total/planner-receipt.json",
+      "examples/drop-orders-order-total/planner-rehearsal.json",
       "examples/drop-orders-order-total/write-back.json",
+      "examples/drop-orders-order-total/integrated-migration-plan.json",
+      "examples/drop-orders-order-total/integrated-planner-receipt.json",
+      "examples/drop-orders-order-total/integrated-workflow.json",
+      "examples/drop-orders-order-total/integrated-write-back.json",
       "examples/evaluation-report.json",
       "examples/live-evaluation.json",
       "examples/authenticated-gate.json"

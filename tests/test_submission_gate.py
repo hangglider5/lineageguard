@@ -87,6 +87,27 @@ class SubmissionGateTests(unittest.TestCase):
             report.local_errors,
         )
 
+    def test_integrated_evidence_cannot_be_omitted(self) -> None:
+        manifest = json.loads(MANIFEST_PATH.read_text("utf-8"))
+        manifest["materials"]["sample_outputs"].remove(
+            "examples/drop-orders-order-total/integrated-workflow.json"
+        )
+        with TemporaryDirectory() as temporary:
+            nested = Path(temporary) / "submission"
+            nested.mkdir()
+            nested_manifest = nested / "manifest.json"
+            nested_manifest.write_text(json.dumps(manifest), "utf-8")
+            report = validate_submission_manifest(
+                nested_manifest, repository_root=REPOSITORY_ROOT
+            )
+
+        self.assertFalse(report.local_materials_passed)
+        self.assertIn(
+            "materials sample_outputs omitted required evidence: "
+            "examples/drop-orders-order-total/integrated-workflow.json",
+            report.local_errors,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

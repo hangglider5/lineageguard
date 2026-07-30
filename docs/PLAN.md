@@ -124,7 +124,7 @@ are complete, and remote endpoints are rejected unless they use HTTPS and
 `DATAHUB_GMS_TOKEN`. The remaining auth gate is a scoped-principal MCP read/write
 rehearsal against the deployment target.
 
-The English Devpost draft and a 386-word AI-planner demo narration are complete.
+The English Devpost draft and a 389-word AI-planner demo narration are complete.
 The public repository and evidence-backed Pages demo are configured. The deployed
 site passes desktop and mobile browser QA. The submission gate passes all local
 materials and now reports only the video URL as an external blocker.
