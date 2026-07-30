@@ -1,0 +1,25 @@
+{
+  "name": "lineageguard-demo-video",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "capture:live": "node scripts/capture-live.mjs",
+    "studio": "remotion studio src/index.ts",
+    "render:rough": "remotion render src/index.ts LineageGuardRoughCut out/lineageguard-rough.mp4 --scale=0.5 --codec=h264 --crf=23",
+    "render:final": "remotion render src/index.ts LineageGuardRoughCut out/lineageguard-final.mp4 --codec=h264 --crf=18",
+    "still": "remotion still src/index.ts LineageGuardRoughCut out/check.png --frame=2250"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.502",
+    "@remotion/media": "4.0.502",
+    "playwright-core": "1.62.0",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "remotion": "4.0.502"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.10",
+    "@types/react-dom": "19.1.7",
+    "typescript": "5.9.2"
+  }
+}

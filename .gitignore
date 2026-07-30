@@ -6,4 +6,7 @@ __pycache__/
 .coverage
 .env
 build/
+video/node_modules/
+video/out/
+video/public/captures/*.webm
 .DS_Store

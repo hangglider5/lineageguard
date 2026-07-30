@@ -61,4 +61,4 @@ The next release gates are a dedicated least-privilege DataHub principal, pull-r
 
 ## Disclosures
 
-No LineageGuard project code predates the hackathon submission period. The project builds on DataHub and the open-source dependencies declared in `pyproject.toml`. OpenAI Codex assisted with implementation, code review, testing, documentation, and visual concept exploration. The entrant directed the product and is responsible for the submitted work.
+No LineageGuard project code predates the hackathon submission period. The project builds on DataHub and the open-source dependencies declared in `pyproject.toml`. OpenAI Codex assisted with implementation, code review, testing, documentation, and visual concept exploration. HeyGen synthesized temporary rough-cut narration for timing and review. The entrant directed the product and is responsible for the submitted work.

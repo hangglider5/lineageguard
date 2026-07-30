@@ -2,7 +2,8 @@
 
 Status on 2026-07-30: **first scenario, fixed evaluation v1, green offline and
 container CI, the responsive live demo API, PAT-authenticated MCP compatibility,
-the evidence-backed Pages build, and the first submission kit draft are complete.**
+the evidence-backed Pages build, the first submission kit draft, and a 2:50
+product-footage rough cut are complete.**
 
 ## Objective
 
@@ -88,6 +89,7 @@ Implemented in fixed evaluation v1:
 - [x] zero-network planner CI with transport, adversarial, and secret-isolation tests
 - [x] three-run real-provider planner rehearsal and committed redacted evidence
 - [x] single-run live MCP + accepted planner + verified write-back/read-back loop
+- [x] reproducible Remotion rough cut with real UI capture and temporary narration
 
 ## Schedule
 
@@ -97,7 +99,7 @@ Implemented in fixed evaluation v1:
 - Jul 29–Aug 1: public demo backend and scoped-token authentication rehearsal
 - Aug 2–4: demo UI/CLI polish, failure states, fresh evaluation pass
 - Aug 5–7: sample outputs and optional upstream feedback/contribution
-- Aug 8: record rough demo and draft Devpost text
+- Jul 30: record rough demo and draft Devpost text — completed ahead of schedule
 - Aug 9: freeze code; fresh-machine setup rehearsal
 - Aug 10: submission buffer only
 
@@ -108,7 +110,7 @@ Jul 24:
 - [x] DataHub starts locally and exposes enough graph context for the chosen story.
 - [x] MCP search and 3+ hop lineage reads succeed on a sample dbt asset.
 - [x] A harmless Decision document write-back and read-back succeed.
-- [ ] Token-authenticated MCP read/write succeeds with scoped permissions.
+- [x] Token-authenticated MCP read/write succeeds with a temporary local PAT.
 
 Jul 30:
 
@@ -128,6 +130,12 @@ The English Devpost draft and a 389-word AI-planner demo narration are complete.
 The public repository and evidence-backed Pages demo are configured. The deployed
 site passes desktop and mobile browser QA. The submission gate passes all local
 materials and now reports only the video URL as an external blocker.
+
+The first product-footage rough cut is also complete. It runs for 2:50, combines
+the real read-only browser workflow with evidence-backed planner, write-back, and
+evaluation scenes, and uses a replaceable synthetic English narration solely for
+timing and review. The editable Remotion composition and capture recipe live in
+`video/`; the final master and public upload remain submission tasks.
 
 The bounded AI planner is implemented behind an explicit flag. It runs only after
 the deterministic Decision passes validation, returns a strict advisory

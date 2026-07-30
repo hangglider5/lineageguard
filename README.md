@@ -305,6 +305,13 @@ PYTHONPATH=src .venv/bin/python -m lineageguard.submission_gate \
   --strict
 ```
 
+## Produce the demo video
+
+The editable Remotion composition, real-browser capture recipe, and replaceable
+rough narration are documented in [`video/README.md`](video/README.md). The
+current review cut runs for 2:50; generated renders and machine-specific browser
+captures stay local, while the composition and narration source are versioned.
+
 ## Design
 
 The implemented first vertical slice is deliberately narrow:
