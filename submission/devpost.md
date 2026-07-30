@@ -12,6 +12,8 @@ A column rename or deletion can silently break dashboards, warehouse models, and
 
 LineageGuard is a pre-merge schema-change agent built on DataHub OSS and the DataHub MCP Server. It resolves the exact source asset and field, reads column-level lineage plus ownership and governance context, classifies compatibility risk, generates a concrete remediation artifact, validates every claim, and can write the verified Decision back to DataHub.
 
+After the deterministic verdict is validated, an optional bounded AI planner turns the attributable graph evidence into an ordered, platform-aware migration plan. The model cannot change the verdict, invent assets or owners, emit executable code, or call DataHub mutation tools. DeepSeek Official API and OpenRouter share the same strict output contract, semantic validator, redacted receipt, and deterministic fallback.
+
 The primary demo asks whether a team can drop `orders.order_total`. LineageGuard verifies the dbt field and its `FLOAT` type, discovers 17 attributable downstream column consumers, and returns `BLOCK / HIGH` with accountable owners, domain fallbacks, migration actions, and a read-only validation query.
 
 ## How it works
@@ -31,16 +33,17 @@ DataHub is the system of context and the system of record for the result. Lineag
 
 ## Validation
 
-The fixed evaluation suite contains 16 versioned cases and 130 exact checks covering safe additions, breaking changes, type mismatches, missing fields, truncated lineage, ownership gaps, domain routing, artifact tampering, unsafe SQL, and verified idempotent write-back. All cases pass. The repository also has more than 50 automated tests, a separate live MCP-backed gate that rechecks all 17 downstream assets, and a PAT-authenticated read/write/read-back receipt.
+The fixed evaluation suite contains 16 versioned cases and 130 exact checks covering safe additions, breaking changes, type mismatches, missing fields, truncated lineage, ownership gaps, domain routing, artifact tampering, unsafe SQL, and verified idempotent write-back. All cases pass. More than 80 automated tests additionally cover the bounded planner contract, provider envelopes, malicious model outputs, transient failures, deterministic fallback, and secret isolation. A separate live MCP-backed gate rechecks all 17 downstream assets, and a PAT-authenticated receipt proves read/write/read-back behavior.
 
 ## What makes it different
 
-LineageGuard does not rebuild DataHub's impact-analysis UI. It closes the operational loop after discovery: change proposal, attributable graph evidence, deterministic decision, concrete migration files, adversarial validation, and graph write-back. The safety-critical verdict remains reproducible and inspectable instead of depending on an unconstrained model response.
+LineageGuard does not rebuild DataHub's impact-analysis UI. It closes the operational loop after discovery: change proposal, attributable graph evidence, deterministic decision, bounded AI planning, concrete migration files, adversarial validation, and graph write-back. The model contributes platform-aware planning while the safety-critical verdict and write targets remain reproducible and inspectable.
 
 ## Built with
 
 - DataHub OSS/Core 1.6.0 and the official showcase-ecommerce graph
 - DataHub MCP Server 0.6.0 over MCP stdio
+- DeepSeek/OpenRouter-compatible bounded model planning
 - Python 3.11–3.13, Pydantic, Starlette, and Uvicorn
 - Docker, Docker Compose, and GitHub Actions
 - A code-native responsive interface with no third-party browser assets
@@ -51,7 +54,7 @@ DataHub Core does not expose the managed `/mcp` endpoint, so the OSS deployment 
 
 ## What's next
 
-The next release gates are a hosted HTTPS demo and a dedicated least-privilege DataHub principal. We also plan to add a bounded model-assisted planner that proposes richer migration patches while keeping the existing deterministic policy and validator as the authority, plus a pull-request integration and a second live change scenario.
+The next release gates are a three-run real-provider planner rehearsal, a dedicated least-privilege DataHub principal, pull-request integration, and a second live change scenario. The public surface will remain read-only unless a separately authenticated, budget-limited model endpoint is deployed.
 
 ## Disclosures
 

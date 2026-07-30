@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 
 from .models import DecisionArtifact, ImpactSnapshot, SchemaChange, Verdict
+from .planner import MigrationProposal
 from .policy import BREAKING_CHANGES, decide
 
 
@@ -134,7 +135,16 @@ def validate_artifact(
     return errors
 
 
-def render_markdown(artifact: DecisionArtifact) -> str:
+def _escape_model_text(value: str) -> str:
+    """Render validated model prose as text rather than active Markdown."""
+
+    return re.sub(r"([\\`*_{}\[\]()#+.!|>~-])", r"\\\1", value)
+
+
+def render_markdown(
+    artifact: DecisionArtifact,
+    proposal: MigrationProposal | None = None,
+) -> str:
     """Render a stable human-reviewable migration decision."""
 
     def asset_count(count: int, *, ownerless: bool = False) -> str:
@@ -244,4 +254,52 @@ def render_markdown(artifact: DecisionArtifact) -> str:
     if artifact.warnings:
         lines.extend(["", "## Warnings", ""])
         lines.extend(f"- {warning}" for warning in artifact.warnings)
+    if proposal is not None:
+        lines.extend(
+            [
+                "",
+                "## Model-assisted migration plan",
+                "",
+                "This advisory plan was accepted by LineageGuard's independent "
+                "grounding validator. The deterministic verdict above remains "
+                "authoritative.",
+                "",
+                _escape_model_text(proposal.executive_summary),
+                "",
+            ]
+        )
+        for step in sorted(proposal.ordered_steps, key=lambda item: item.sequence):
+            dependencies = (
+                ", ".join(f"`{value}`" for value in step.depends_on) or "none"
+            )
+            columns = (
+                ", ".join(f"`{value}`" for value in step.impacted_columns)
+                or "none"
+            )
+            owners = (
+                ", ".join(f"`{value}`" for value in step.owner_urns) or "unassigned"
+            )
+            lines.extend(
+                [
+                    f"### {step.sequence}. `{step.step_id}` — `{step.action_kind}`",
+                    "",
+                    f"- Asset: `{step.asset_urn}`",
+                    f"- Impacted columns: {columns}",
+                    f"- Owners: {owners}",
+                    f"- Depends on: {dependencies}",
+                    f"- Rationale: {_escape_model_text(step.rationale)}",
+                    "- Success criteria: "
+                    + _escape_model_text(step.success_criteria),
+                    "",
+                ]
+            )
+        lines.extend(["## Open questions", ""])
+        if proposal.open_questions:
+            lines.extend(
+                f"- {_escape_model_text(question)}"
+                for question in proposal.open_questions
+            )
+        else:
+            lines.append("- None recorded by the bounded planner.")
+
     return "\n".join(lines).rstrip() + "\n"

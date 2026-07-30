@@ -14,6 +14,8 @@ from typing import Any, Sequence
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
+from .subprocess_env import mcp_child_environment
+
 
 DEFAULT_GMS_URL = "http://localhost:8080"
 INTERFACE_TOOLS = (
@@ -88,13 +90,10 @@ async def probe(
 ) -> dict[str, Any]:
     """Initialize MCP and return the advertised LineageGuard tool schemas."""
 
-    child_env = os.environ.copy()
-    child_env.update(
-        {
-            "DATAHUB_GMS_URL": gms_url,
-            "DATAHUB_TELEMETRY_ENABLED": "false",
-            "TOOLS_IS_MUTATION_ENABLED": "true",
-        }
+    child_env = mcp_child_environment(
+        os.environ,
+        gms_url=gms_url,
+        mutation_enabled=True,
     )
     parameters = StdioServerParameters(command=server_command, env=child_env)
 

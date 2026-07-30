@@ -14,13 +14,17 @@ from urllib.parse import urlparse
 
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
+from dotenv import load_dotenv
 from pydantic import BaseModel, ConfigDict
 
 from .artifacts import render_markdown, validate_artifact
 from .datahub_mcp import call_payload, collect_snapshot
+from .llm_client import PlannerSettings, PlannerTransport
 from .mcp_probe import DEFAULT_GMS_URL, default_server_command
 from .models import DecisionArtifact, SchemaChange
+from .planner import PlannerOutcome, PlannerStatus, run_model_planner
 from .policy import decide
+from .subprocess_env import mcp_child_environment
 
 
 class WriteBackReceipt(BaseModel):
@@ -38,6 +42,7 @@ class WorkflowResult(BaseModel):
 
     artifact: DecisionArtifact
     validation_errors: list[str]
+    planner: PlannerOutcome | None = None
     write_back: WriteBackReceipt | None = None
 
 
@@ -131,19 +136,22 @@ async def run_workflow(
     write_back: bool = False,
     document_urn: str | None = None,
     require_token: bool = False,
+    planner_settings: PlannerSettings | None = None,
+    require_planner: bool = False,
+    planner_transport: PlannerTransport | None = None,
 ) -> WorkflowResult:
     if document_urn and not write_back:
         raise ValueError("document_urn requires write_back")
-    child_env = os.environ.copy()
+    if require_planner and planner_settings is None:
+        raise ValueError("require_planner requires planner_settings")
+    parent_env = os.environ.copy()
     validate_connection_policy(
-        gms_url, require_token=require_token, environment=child_env
+        gms_url, require_token=require_token, environment=parent_env
     )
-    child_env.update(
-        {
-            "DATAHUB_GMS_URL": gms_url,
-            "DATAHUB_TELEMETRY_ENABLED": "false",
-            "TOOLS_IS_MUTATION_ENABLED": "true" if write_back else "false",
-        }
+    child_env = mcp_child_environment(
+        parent_env,
+        gms_url=gms_url,
+        mutation_enabled=write_back,
     )
     parameters = StdioServerParameters(
         command=server_command or default_server_command(), env=child_env
@@ -157,7 +165,30 @@ async def run_workflow(
                 )
                 artifact = decide(change, snapshot)
                 validation_errors = validate_artifact(artifact, change, snapshot)
-                markdown = render_markdown(artifact)
+                planner = None
+                if planner_settings is not None:
+                    if validation_errors:
+                        raise RuntimeError(
+                            "Refusing model planning because deterministic artifact "
+                            "validation failed"
+                        )
+                    planner = await run_model_planner(
+                        artifact,
+                        planner_settings,
+                        transport=planner_transport,
+                    )
+                    if (
+                        require_planner
+                        and planner.receipt.status != PlannerStatus.ACCEPTED
+                    ):
+                        raise RuntimeError(
+                            "Required model plan was not accepted: "
+                            + (planner.receipt.fallback_reason or planner.receipt.status.value)
+                        )
+                markdown = render_markdown(
+                    artifact,
+                    planner.proposal if planner is not None else None,
+                )
                 receipt = None
                 if write_back:
                     if validation_errors:
@@ -174,6 +205,7 @@ async def run_workflow(
     return WorkflowResult(
         artifact=artifact,
         validation_errors=validation_errors,
+        planner=planner,
         write_back=receipt,
     )
 
@@ -184,8 +216,30 @@ def write_outputs(result: WorkflowResult, output_dir: Path) -> None:
         result.artifact.model_dump_json(indent=2) + "\n", encoding="utf-8"
     )
     (output_dir / "migration-checklist.md").write_text(
-        render_markdown(result.artifact), encoding="utf-8"
+        render_markdown(
+            result.artifact,
+            result.planner.proposal if result.planner is not None else None,
+        ),
+        encoding="utf-8",
     )
+    plan_path = output_dir / "migration-plan.json"
+    planner_receipt_path = output_dir / "planner-receipt.json"
+    if result.planner is not None:
+        planner_receipt_path.write_text(
+            result.planner.receipt.model_dump_json(indent=2) + "\n",
+            encoding="utf-8",
+        )
+        if result.planner.proposal is not None:
+            plan_path.write_text(
+                result.planner.proposal.model_dump_json(indent=2) + "\n",
+                encoding="utf-8",
+            )
+        elif plan_path.exists():
+            plan_path.unlink()
+    else:
+        for stale_path in (plan_path, planner_receipt_path):
+            if stale_path.exists():
+                stale_path.unlink()
     receipt_path = output_dir / "write-back.json"
     if result.write_back:
         receipt_path.write_text(
@@ -204,6 +258,23 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--gms-url", default=DEFAULT_GMS_URL)
     parser.add_argument("--server-command", default=default_server_command())
     parser.add_argument("--max-assets", type=int, default=100)
+    parser.add_argument(
+        "--planner",
+        choices=("off", "model"),
+        default="off",
+        help="Run the bounded model planner after deterministic validation.",
+    )
+    parser.add_argument(
+        "--require-planner",
+        action="store_true",
+        help="Fail unless the requested model plan passes grounding validation.",
+    )
+    parser.add_argument(
+        "--env-file",
+        type=Path,
+        default=Path(".env"),
+        help="Load runtime secrets from this ignored file when it exists.",
+    )
     parser.add_argument(
         "--require-token",
         action="store_true",
@@ -226,7 +297,20 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.document_urn and not args.write_back:
         print("LineageGuard failed: --document-urn requires --write-back", file=sys.stderr)
         return 1
+    if args.require_planner and args.planner != "model":
+        print(
+            "LineageGuard failed: --require-planner requires --planner model",
+            file=sys.stderr,
+        )
+        return 1
     try:
+        if args.env_file.exists():
+            load_dotenv(args.env_file, override=False)
+        planner_settings = (
+            PlannerSettings.from_environment(os.environ)
+            if args.planner == "model"
+            else None
+        )
         change = SchemaChange.model_validate_json(args.scenario.read_text("utf-8"))
         result = asyncio.run(
             run_workflow(
@@ -237,6 +321,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                 write_back=args.write_back,
                 document_urn=args.document_urn,
                 require_token=args.require_token,
+                planner_settings=planner_settings,
+                require_planner=args.require_planner,
             )
         )
         write_outputs(result, args.output_dir)
@@ -252,6 +338,12 @@ def main(argv: Sequence[str] | None = None) -> int:
                 "downstream_total": result.artifact.evidence.downstream_total,
                 "lineage_complete": result.artifact.evidence.lineage_complete,
                 "validation_errors": result.validation_errors,
+                "planner_status": (
+                    result.planner.receipt.status.value if result.planner else "disabled"
+                ),
+                "planner_model": (
+                    result.planner.receipt.model if result.planner else None
+                ),
                 "document_urn": (
                     result.write_back.document_urn if result.write_back else None
                 ),

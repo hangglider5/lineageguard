@@ -2,6 +2,23 @@
 
 The evaluation has two intentionally separate layers.
 
+The optional bounded-model layer is evaluated separately. Unit and adversarial
+tests use fixed transport responses so CI remains deterministic and zero-cost. A
+real-provider rehearsal runs 1–5 times against a committed Decision and requires
+every plan to pass exact asset, column, owner, dependency, output-schema, and
+non-executable-text checks:
+
+```bash
+lineageguard-planner-rehearsal \
+  examples/drop-orders-order-total/decision.json \
+  --output-dir build/planner-rehearsal \
+  --runs 3
+```
+
+The full live gate adds `--planner model --require-planner` to the normal workflow.
+Neither real-provider path runs in GitHub Actions or exposes a key to the DataHub
+MCP child process.
+
 ## Fixed offline suite
 
 `suite.json` contains 16 strict, versioned cases with explicit schema changes,

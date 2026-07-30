@@ -1,6 +1,6 @@
 # DataHub Agent Hackathon Plan
 
-Status on 2026-07-29: **first scenario, fixed evaluation v1, green offline and
+Status on 2026-07-30: **first scenario, fixed evaluation v1, green offline and
 container CI, the responsive live demo API, PAT-authenticated MCP compatibility,
 the evidence-backed Pages build, and the first submission kit draft are complete.**
 
@@ -83,6 +83,10 @@ Implemented in fixed evaluation v1:
 - [x] English Devpost draft, disclosure, and 2:55 demo script
 - [x] local/strict submission readiness gate
 - [x] zero-secret GitHub Pages build derived from verified evidence
+- [x] bounded DeepSeek/OpenRouter planner contract and provider transport
+- [x] independent grounding validation, deterministic fallback, and redacted receipt
+- [x] zero-network planner CI with transport, adversarial, and secret-isolation tests
+- [ ] three-run real-provider planner rehearsal and committed redacted evidence
 
 ## Schedule
 
@@ -123,6 +127,12 @@ The first English Devpost draft and a 364-word demo narration are also complete.
 The public repository and evidence-backed Pages demo are configured. The deployed
 site passes desktop and mobile browser QA. The submission gate passes all local
 materials and now reports only the video URL as an external blocker.
+
+The bounded AI planner is implemented behind an explicit flag. It runs only after
+the deterministic Decision passes validation, returns a strict advisory
+`MigrationProposal`, and cannot change verdicts or write targets. The next gate is
+three accepted real-provider runs after a local API key is configured; only then
+will model-generated evidence be promoted into the public demo and submission.
 
 If either gate fails, reduce scope to a CLI and a single change type. Do not
 remove evaluation or write-back.

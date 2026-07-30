@@ -39,6 +39,11 @@ The first end-to-end scenario passed on 2026-07-23:
 - Metadata Service Authentication was enabled for a local rehearsal and a
   one-hour PAT completed authenticated MCP read, write-back, and both read-back
   checks. Least-privilege policy scoping remains a deployment gate.
+- A bounded, provider-selectable AI planner now turns the validated Decision into
+  an ordered, platform-aware migration plan. It cannot change the verdict, cite
+  new assets or owners, emit executable code, or write to DataHub. DeepSeek and
+  OpenRouter use the same strict contract; the real-provider rehearsal remains
+  opt-in and is never part of offline CI.
 
 The resulting artifacts are committed under
 [`examples/drop-orders-order-total/`](examples/drop-orders-order-total/).
@@ -123,9 +128,53 @@ type, retrieves column-level downstream lineage, compacts only attributable grap
 metadata, applies fail-closed rules, validates every cited asset/owner/query, and
 only then permits write-back.
 
+## Run the bounded AI planner
+
+Copy the ignored environment template and add one API key locally:
+
+```bash
+cp .env.example .env
+```
+
+DeepSeek Official API is the default. Set `LINEAGEGUARD_LLM_API_KEY` in `.env`;
+the configured model is `deepseek-v4-flash` with thinking disabled. To use
+OpenRouter, set the provider to `openrouter` and the model to
+`deepseek/deepseek-v4-flash` as shown in the template.
+
+First rehearse only the model layer three times against the committed,
+deterministic Decision. This requires no running DataHub instance:
+
+```bash
+PYTHONPATH=src .venv/bin/python -m lineageguard.planner_rehearsal \
+  examples/drop-orders-order-total/decision.json \
+  --output-dir build/planner-rehearsal \
+  --runs 3
+```
+
+Then run the complete MCP-backed workflow and require a grounded model plan:
+
+```bash
+PYTHONPATH=src .venv/bin/python -m lineageguard.workflow \
+  scenarios/drop_orders_order_total.json \
+  --output-dir build/drop-orders-order-total-model \
+  --planner model \
+  --require-planner
+```
+
+An accepted run adds `migration-plan.json` and `planner-receipt.json`. The receipt
+records provider, model, token counts, latency, request/result hashes, and
+validation status without storing the API key, raw prompt, or hidden reasoning.
+If the model is unavailable or ungrounded, normal `--planner model` falls back to
+the deterministic checklist; `--require-planner` instead fails the live gate.
+
+The model receives at most 25 compacted assets and never sees raw lineage
+responses, DataHub Document text, arbitrary endpoints, or secrets. The MCP child
+process receives a minimal environment allowlist, so LLM credentials are not
+inherited. The public demo API keeps the planner disabled to prevent cost abuse.
+
 ## Run the fixed evaluations
 
-The offline suite requires neither Docker nor network access:
+The offline suite requires neither Docker, network access, nor an LLM API key:
 
 ```bash
 PYTHONPATH=src .venv/bin/python -m lineageguard.evaluation \

@@ -1,7 +1,7 @@
 # LineageGuard proposal review
 
 Reviewed on 2026-07-22 against the official rules, current DataHub `1.6.0`
-documentation, and a live local Quickstart. Updated through 2026-07-29 after the
+documentation, and a live local Quickstart. Updated through 2026-07-30 after the
 end-to-end scenario, authentication rehearsal, demo UI, and submission draft.
 
 ## Verdict
@@ -139,6 +139,13 @@ deduplicated retrieved count before calling lineage complete.
 The MCP server's current `hasMore` value is derived from the fetched window and
 can be false even when `total` is larger. LineageGuard therefore does not trust
 `hasMore` as its completeness proof.
+
+The bounded planner does not receive this raw response. It runs only after the
+deterministic artifact is validated and receives at most 25 compact asset facts:
+URN, platform, hop, impacted columns, owners, domains, and immutable policy
+results. Descriptions and Document text remain outside model context. Model output
+is advisory, strictly typed, independently grounded, and omitted from write-back
+when validation fails.
 
 ### P1 — `max_hops=3` means the `3+` bucket
 

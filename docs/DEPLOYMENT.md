@@ -134,6 +134,13 @@ GitHub workflow YAML. A hosted demo should keep `DATAHUB_GMS_TOKEN` in its platf
 secret store, disable default DataHub credentials, and expose only the thin
 LineageGuard backend over HTTPS.
 
+For local model-assisted planning, copy `.env.example` to the ignored `.env` and
+set `LINEAGEGUARD_LLM_API_KEY`. The CLI loads this file without overriding
+already-exported values. Model credentials are deliberately excluded from the
+environment passed to `mcp-server-datahub`. The public demo process does not
+enable the planner; do not add an LLM key to the public Pages build or its
+container unless a separate authenticated, budget-limited surface is designed.
+
 On 2026-07-28, the local OSS rehearsal enabled Metadata Service Authentication,
 verified an unauthenticated GraphQL request returned `401`, issued a one-hour PAT,
 and completed MCP read, idempotent Decision write-back, document read-back, and
