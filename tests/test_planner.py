@@ -173,6 +173,36 @@ class PlannerContractTests(unittest.TestCase):
         self.assertTrue(any("must be ordered" in error for error in errors))
         self.assertTrue(any("impacted-column evidence" in error for error in errors))
 
+    def test_lineage_degree_must_not_move_backwards(self) -> None:
+        proposal = make_valid_proposal(self.context)
+        degree_four_index = next(
+            index
+            for index, asset in enumerate(self.context.assets)
+            if asset.degree == 4
+        )
+        proposal.ordered_steps[1], proposal.ordered_steps[degree_four_index] = (
+            proposal.ordered_steps[degree_four_index],
+            proposal.ordered_steps[1],
+        )
+        for index, step in enumerate(proposal.ordered_steps, start=1):
+            step.sequence = index
+
+        errors = validate_migration_proposal(proposal, self.context)
+
+        self.assertTrue(any("lineage degree" in error for error in errors))
+
+    def test_unverifiable_summary_and_edge_claims_are_rejected(self) -> None:
+        proposal = make_valid_proposal(self.context)
+        proposal.executive_summary = "Block 17 consumers due to high severity."
+        proposal.ordered_steps[0].rationale = (
+            "This asset feeds into another downstream consumer."
+        )
+
+        errors = validate_migration_proposal(proposal, self.context)
+
+        self.assertTrue(any("must not restate" in error for error in errors))
+        self.assertTrue(any("claims a lineage edge" in error for error in errors))
+
     def test_markup_links_multiline_and_free_text_urns_are_rejected(self) -> None:
         proposal = make_valid_proposal(self.context)
         proposal.executive_summary = "<script>alert(1)</script>"

@@ -153,6 +153,13 @@ value as data in the compact context, and rejects any different action. This kee
 the model focused on sequencing, dependencies, rationale, success criteria, and
 questions rather than reclassifying graph entities.
 
+The compact Decision retains each asset's relative degree but not exact edges
+among downstream assets. Planner steps must therefore move through nondecreasing
+degree, while `depends_on` is labeled and validated only as a proposed execution
+prerequisite. It is not represented as DataHub-verified adjacency. Model prose is
+rejected if it asserts an absent direct edge, and model summaries cannot restate
+counts, verdict, or severity that belong to the deterministic artifact.
+
 ### P1 — `max_hops=3` means the `3+` bucket
 
 The MCP implementation treats three or more hops as `1`, `2`, and `3+`; it is not

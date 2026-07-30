@@ -167,6 +167,10 @@ validation status without storing the API key, raw prompt, or hidden reasoning.
 If the model is unavailable or ungrounded, normal `--planner model` falls back to
 the deterministic checklist; `--require-planner` instead fails the live gate.
 
+Step dependencies are explicitly advisory execution prerequisites, not asserted
+DataHub lineage edges. Steps must move outward by nondecreasing lineage degree,
+and prose that invents a direct graph edge is rejected.
+
 Each asset includes one deterministically derived allowed action, preventing the
 model from relabeling a semantic dataset as a dashboard or a warehouse model as a
 BI artifact. The model receives at most 25 compacted assets and never sees raw lineage

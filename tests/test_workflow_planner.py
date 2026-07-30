@@ -110,7 +110,9 @@ class PlannerWorkflowOutputTests(unittest.IsolatedAsyncioTestCase):
             checklist = output_dir / "migration-checklist.md"
             self.assertTrue(plan.exists())
             self.assertTrue(receipt.exists())
-            self.assertIn("Model-assisted migration plan", checklist.read_text("utf-8"))
+            checklist_text = checklist.read_text("utf-8")
+            self.assertIn("Model-assisted migration plan", checklist_text)
+            self.assertIn("Proposed execution prerequisites", checklist_text)
             self.assertIn("deepseek-v4-flash", receipt.read_text("utf-8"))
             self.assertNotIn("not-written", receipt.read_text("utf-8"))
 

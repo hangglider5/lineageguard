@@ -269,7 +269,7 @@ def render_markdown(
             ]
         )
         for step in sorted(proposal.ordered_steps, key=lambda item: item.sequence):
-            dependencies = (
+            prerequisites = (
                 ", ".join(f"`{value}`" for value in step.depends_on) or "none"
             )
             columns = (
@@ -286,7 +286,7 @@ def render_markdown(
                     f"- Asset: `{step.asset_urn}`",
                     f"- Impacted columns: {columns}",
                     f"- Owners: {owners}",
-                    f"- Depends on: {dependencies}",
+                    f"- Proposed execution prerequisites: {prerequisites}",
                     f"- Rationale: {_escape_model_text(step.rationale)}",
                     "- Success criteria: "
                     + _escape_model_text(step.success_criteria),

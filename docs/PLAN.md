@@ -137,9 +137,12 @@ will model-generated evidence be promoted into the public demo and submission.
 The first live batch exposed occasional JSON truncation; tighter prose limits then
 produced three structurally grounded plans. Quality review found that the original
 BI action rule still allowed a Power BI measure dataset to be labeled as either a
-dashboard or semantic model. The final contract now supplies exactly one
-deterministically derived allowed action per asset. A fresh three-run gate against
-this stricter contract is required before evidence promotion.
+dashboard or semantic model. A stricter action contract produced three accepted
+plans, but review then found incorrect free-text counts and dependency wording
+that could be mistaken for verified graph edges. The final gate now also forbids
+count/verdict claims in model summaries, enforces nondecreasing lineage degree,
+and labels dependencies as advisory execution prerequisites. A fresh three-run
+gate against this complete contract is required before evidence promotion.
 
 If either gate fails, reduce scope to a CLI and a single change type. Do not
 remove evaluation or write-back.
